@@ -5,8 +5,14 @@
   "assets": {
     "directory": "./public",
     "binding": "ASSETS",
-    "run_worker_first": ["/", "/index.html", "/api/*"]
+    "run_worker_first": ["/", "/index.html", "/dhaka-flights-today", "/schedule", "/api/*"]
   },
+  "kv_namespaces": [
+    {
+      "binding": "SCHEDULE_KV",
+      "id": "c721413f2b6e48ec86ff9cc788acc9a5"
+    }
+  ],
   "rules": [
     {
       "type": "Text",
