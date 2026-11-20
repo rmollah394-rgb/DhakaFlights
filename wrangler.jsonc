@@ -5,12 +5,26 @@
   "assets": {
     "directory": "./public",
     "binding": "ASSETS",
-    "run_worker_first": ["/", "/index.html", "/dhaka-flights-today", "/schedule", "/api/*"]
+    "run_worker_first": [
+      "/",
+      "/index.html",
+      "/dhaka-flights-today",
+      "/schedule",
+      "/admin",
+      "/admin/*",
+      "/sitemap.xml",
+      "/robots.txt",
+      "/api/*"
+    ]
   },
   "kv_namespaces": [
     {
       "binding": "SCHEDULE_KV",
       "id": "c721413f2b6e48ec86ff9cc788acc9a5"
+    },
+    {
+      "binding": "CMS_KV",
+      "id": "22abbbb711e04c54832e0bf371e2c20e"
     }
   ],
   "rules": [
