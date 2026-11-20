@@ -13,6 +13,23 @@ const CURATED_DHAKA_DEALS = [
   { origin: "DAC", destination: "YYZ", city: "Toronto", country: "Canada", region: "eu", transfers: 1, airline: "EK", price: null }
 ];
 
+const SAMPLE_DAC_SCHEDULE = {
+  departures: [
+    { flight_iata: "EK585", airline_iata: "EK", dep_iata: "DAC", arr_iata: "DXB", dep_time: "2026-11-20 01:40", dep_terminal: "2", dep_gate: "A3", status: "scheduled", dep_delayed: null },
+    { flight_iata: "QR639", airline_iata: "QR", dep_iata: "DAC", arr_iata: "DOH", dep_time: "2026-11-20 03:30", dep_terminal: "1", dep_gate: "B2", status: "scheduled", dep_delayed: null },
+    { flight_iata: "BG147", airline_iata: "BG", dep_iata: "DAC", arr_iata: "DXB", dep_time: "2026-11-20 19:45", dep_terminal: "2", dep_gate: "C1", status: "active", dep_delayed: 15 },
+    { flight_iata: "SQ447", airline_iata: "SQ", dep_iata: "DAC", arr_iata: "SIN", dep_time: "2026-11-20 23:55", dep_terminal: "2", dep_gate: "A1", status: "scheduled", dep_delayed: null },
+    { flight_iata: "MH197", airline_iata: "MH", dep_iata: "DAC", arr_iata: "KUL", dep_time: "2026-11-20 00:35", dep_terminal: "1", dep_gate: "B4", status: "landed", dep_delayed: null },
+    { flight_iata: "BS341", airline_iata: "BS", dep_iata: "DAC", arr_iata: "DXB", dep_time: "2026-11-20 18:10", dep_terminal: "1", dep_gate: "C3", status: "active", dep_delayed: null }
+  ],
+  arrivals: [
+    { flight_iata: "EK584", airline_iata: "EK", dep_iata: "DXB", arr_iata: "DAC", arr_time: "2026-11-20 19:15", arr_terminal: "2", arr_baggage: "4", status: "active", arr_delayed: null },
+    { flight_iata: "QR638", airline_iata: "QR", dep_iata: "DOH", arr_iata: "DAC", arr_time: "2026-11-20 02:00", arr_terminal: "1", arr_baggage: "2", status: "landed", arr_delayed: null },
+    { flight_iata: "SQ446", airline_iata: "SQ", dep_iata: "SIN", arr_iata: "DAC", arr_time: "2026-11-20 22:40", arr_terminal: "2", arr_baggage: "3", status: "scheduled", arr_delayed: null },
+    { flight_iata: "TK712", airline_iata: "TK", dep_iata: "IST", arr_iata: "DAC", arr_time: "2026-11-20 05:25", arr_terminal: "1", arr_baggage: "1", status: "scheduled", arr_delayed: 10 }
+  ]
+};
+
 export async function handleDeals(request, env, ctx, url) {
   const origin = (url.searchParams.get("origin") || "DAC").toUpperCase().slice(0, 3);
   const currency = (url.searchParams.get("currency") || "bdt").toLowerCase() === "usd" ? "usd" : "bdt";
@@ -36,10 +53,7 @@ export async function handleDeals(request, env, ctx, url) {
     for (const apiUrl of endpoints) {
       try {
         const res = await fetch(apiUrl, {
-          headers: {
-            "X-Access-Token": env.TRAVELPAYOUTS_TOKEN,
-            "Accept-Encoding": "gzip, deflate",
-          },
+          headers: { "X-Access-Token": env.TRAVELPAYOUTS_TOKEN, "Accept-Encoding": "gzip, deflate" }
         });
         if (res.ok) {
           const json = await res.json();
@@ -62,12 +76,7 @@ export async function handleDeals(request, env, ctx, url) {
 
   const response = new Response(
     JSON.stringify({ ok: true, source, origin, currency, deals }),
-    {
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-        "Cache-Control": "public, max-age=3600",
-      },
-    }
+    { headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "public, max-age=3600" } }
   );
   ctx.waitUntil(cache.put(cacheKey, response.clone()));
   return response;
@@ -101,10 +110,7 @@ export async function handleCalendar(request, env, ctx, url) {
     for (const apiUrl of endpoints) {
       try {
         const res = await fetch(apiUrl, {
-          headers: {
-            "X-Access-Token": env.TRAVELPAYOUTS_TOKEN,
-            "Accept-Encoding": "gzip, deflate",
-          },
+          headers: { "X-Access-Token": env.TRAVELPAYOUTS_TOKEN, "Accept-Encoding": "gzip, deflate" }
         });
         if (res.ok) {
           const json = await res.json();
@@ -114,7 +120,7 @@ export async function handleCalendar(request, env, ctx, url) {
                 date: (item.departure_at || dateKey).slice(0, 10),
                 price: item.price,
                 airline: item.airline || "",
-                transfers: item.transfers ?? 0,
+                transfers: item.transfers ?? 0
               }))
               .sort((a, b) => a.date.localeCompare(b.date));
             break;
@@ -128,12 +134,7 @@ export async function handleCalendar(request, env, ctx, url) {
 
   const response = new Response(
     JSON.stringify({ ok: true, source, origin, destination: dest, month, currency, days }),
-    {
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-        "Cache-Control": "public, max-age=3600",
-      },
-    }
+    { headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "public, max-age=3600" } }
   );
   ctx.waitUntil(cache.put(cacheKey, response.clone()));
   return response;
@@ -150,34 +151,76 @@ export async function handleAlert(request, env) {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return new Response(JSON.stringify({ ok: false, error: "Please enter a valid email address." }), {
         status: 400,
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" }
       });
     }
 
-    const record = {
-      email,
-      origin,
-      destination,
-      targetPrice,
-      createdAt: new Date().toISOString(),
-    };
-
+    const record = { email, origin, destination, targetPrice, createdAt: new Date().toISOString() };
     if (env.ALERTS_KV) {
       await env.ALERTS_KV.put(`alert:${origin}-${destination}:${email}`, JSON.stringify(record));
     }
 
     return new Response(
-      JSON.stringify({
-        ok: true,
-        storedInKV: Boolean(env.ALERTS_KV),
-        message: `Price alert active for ${origin} → ${destination}!`,
-      }),
+      JSON.stringify({ ok: true, storedInKV: Boolean(env.ALERTS_KV), message: `Price alert active for ${origin} → ${destination}!` }),
       { headers: { "Content-Type": "application/json" } }
     );
   } catch (_) {
     return new Response(JSON.stringify({ ok: false, error: "Invalid request data." }), {
       status: 400,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json" }
     });
   }
+}
+
+export async function handleSchedule(request, env, url) {
+  const type = url.searchParams.get("type") === "arrivals" ? "arrivals" : "departures";
+  const param = type === "arrivals" ? "arr_iata" : "dep_iata";
+  const kvKey = `dac:${type}`;
+  const CACHE_TTL_MS = 3 * 60 * 60 * 1000;
+
+  let cached = null;
+  if (env.SCHEDULE_KV) {
+    try {
+      cached = await env.SCHEDULE_KV.get(kvKey, "json");
+    } catch (_) {}
+  }
+
+  if (cached && cached.updatedAt && (Date.now() - cached.updatedAt) < CACHE_TTL_MS) {
+    return new Response(
+      JSON.stringify({ ok: true, airport: "DAC", type, source: "kv-cache", updatedAt: cached.updatedAt, flights: cached.flights }),
+      { headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "public, max-age=600" } }
+    );
+  }
+
+  if (env.AIRLABS_API_KEY) {
+    try {
+      const apiUrl = `https://airlabs.co/api/v9/schedules?${param}=DAC&api_key=${encodeURIComponent(env.AIRLABS_API_KEY)}`;
+      const res = await fetch(apiUrl);
+      if (res.ok) {
+        const json = await res.json();
+        if (!json.error && Array.isArray(json.response) && json.response.length > 0) {
+          const payload = { updatedAt: Date.now(), flights: json.response };
+          if (env.SCHEDULE_KV) {
+            await env.SCHEDULE_KV.put(kvKey, JSON.stringify(payload));
+          }
+          return new Response(
+            JSON.stringify({ ok: true, airport: "DAC", type, source: "live", updatedAt: payload.updatedAt, flights: payload.flights }),
+            { headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "public, max-age=600" } }
+          );
+        }
+      }
+    } catch (_) {}
+  }
+
+  if (cached && Array.isArray(cached.flights)) {
+    return new Response(
+      JSON.stringify({ ok: true, airport: "DAC", type, source: "stale-cache", updatedAt: cached.updatedAt, flights: cached.flights }),
+      { headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "public, max-age=300" } }
+    );
+  }
+
+  return new Response(
+    JSON.stringify({ ok: true, airport: "DAC", type, source: "sample", updatedAt: Date.now(), flights: SAMPLE_DAC_SCHEDULE[type] }),
+    { headers: { "Content-Type": "application/json; charset=utf-8" } }
+  );
 }
