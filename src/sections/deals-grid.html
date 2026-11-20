@@ -1,0 +1,27 @@
+<section id="deals" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-7">
+    <div>
+      <span class="text-xs font-extrabold uppercase tracking-wider text-blue-700">Live Fare Comparison</span>
+      <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">
+        Popular Flight Deals from Bangladesh
+      </h2>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2">
+      <button type="button" onclick="setRegionFilter('all')" id="reg-all" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#0a3673] text-white">All</button>
+      <button type="button" onclick="setRegionFilter('me')" id="reg-me" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white border border-slate-300 text-slate-700 hover:bg-slate-100">Middle East</button>
+      <button type="button" onclick="setRegionFilter('asia')" id="reg-asia" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white border border-slate-300 text-slate-700 hover:bg-slate-100">Asia</button>
+      <button type="button" onclick="setRegionFilter('eu')" id="reg-eu" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white border border-slate-300 text-slate-700 hover:bg-slate-100">Europe &amp; US</button>
+
+      <select id="dealsOrigin" onchange="loadDeals()" class="ml-1 border border-slate-300 rounded-full px-3.5 py-1.5 text-xs font-bold bg-white">
+        <option value="DAC">From DAC</option>
+        <option value="CGP">From CGP</option>
+        <option value="ZYL">From ZYL</option>
+      </select>
+    </div>
+  </div>
+
+  <div id="dealsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    <div class="col-span-full text-center py-12 text-slate-400 font-medium">Loading live airfares...</div>
+  </div>
+</section>
