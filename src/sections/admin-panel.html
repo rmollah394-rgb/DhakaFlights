@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Admin Panel — DhakaFlights.com</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans antialiased min-h-screen">
+
+  <!-- Login Screen -->
+  <div id="loginView" class="min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white max-w-md w-full rounded-3xl shadow-xl border border-slate-200 p-8">
+      <div class="text-center mb-6">
+        <div class="inline-block bg-[#003580] text-[#FFD200] font-extrabold text-xl px-4 py-2 rounded-xl mb-3">DhakaFlights.com</div>
+        <h1 class="text-2xl font-extrabold text-slate-900">Admin Control Panel</h1>
+        <p class="text-xs text-slate-500 mt-1">Manage routes, travel guides, FAQs &amp; SEO without touching code.</p>
+      </div>
+      <form id="loginForm" onsubmit="doLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1">Admin Password</label>
+          <input type="password" id="adminPassInput" required placeholder="Enter ADMIN_PASSWORD"
+            class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-blue-600 focus:outline-none" />
+        </div>
+        <button type="submit" id="loginBtn" class="w-full bg-[#003580] hover:bg-blue-900 text-white font-extrabold py-3 rounded-xl transition">
+          Sign In to Dashboard
+        </button>
+        <p id="loginError" class="hidden text-xs font-bold text-red-600 text-center"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Admin Dashboard -->
+  <div id="dashView" class="hidden">
+    <header class="bg-[#003580] text-white px-4 sm:px-8 h-16 flex items-center justify-between sticky top-0 z-30 shadow">
+      <div class="flex items-center gap-3">
+        <span class="font-extrabold text-lg">DhakaFlights<span class="text-[#FFD200]">.com</span></span>
+        <span class="bg-white/15 text-xs font-bold px-2.5 py-0.5 rounded-full">Admin CMS</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <span id="saveToast" class="hidden bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full">Saved!</span>
+        <a href="/" target="_blank" class="text-xs font-bold bg-white/15 hover:bg-white/25 px-3 py-1.5 rounded-lg">View Live Site ↗</a>
+        <button type="button" onclick="doLogout()" class="text-xs font-bold bg-red-500/80 hover:bg-red-600 px-3 py-1.5 rounded-lg">Logout</button>
+      </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- Sidebar Menu -->
+      <aside class="lg:col-span-3 space-y-1.5">
+        <button onclick="showTab('settings')" id="tab-settings" class="w-full text-left px-4 py-3 rounded-xl font-bold text-sm bg-[#003580] text-white">⚙️ Site &amp; SEO Settings</button>
+        <button onclick="showTab('routes')" id="tab-routes" class="w-full text-left px-4 py-3 rounded-xl font-bold text-sm bg-white text-slate-700 hover:bg-slate-50">✈️ SEO Route Pages</button>
+        <button onclick="showTab('guides')" id="tab-guides" class="w-full text-left px-4 py-3 rounded-xl font-bold text-sm bg-white text-slate-700 hover:bg-slate-50">📰 Travel Guides / Blog</button>
+        <button onclick="showTab('faqs')" id="tab-faqs" class="w-full text-left px-4 py-3 rounded-xl font-bold text-sm bg-white text-slate-700 hover:bg-slate-50">❓ Homepage FAQs</button>
+        <button onclick="showTab('alerts')" id="tab-alerts" class="w-full text-left px-4 py-3 rounded-xl font-bold text-sm bg-white text-slate-700 hover:bg-slate-50">🔔 Price Alert Emails</button>
+        <button onclick="showTab('tools')" id="tab-tools" class="w-full text-left px-4 py-3 rounded-xl font-bold text-sm bg-white text-slate-700 hover:bg-slate-50">⚡ Cache &amp; SEO Links</button>
+      </aside>
+
+      <!-- Main Panel Area -->
+      <main class="lg:col-span-9 space-y-6">
+
+        <!-- 1. SITE SETTINGS -->
+        <section id="panel-settings" class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+          <h2 class="text-xl font-extrabold text-slate-900">Homepage &amp; SEO Settings</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="md:col-span-2">
+              <label class="block text-xs font-bold text-slate-600 mb-1">Hero Headline (Use Enter for new line)</label>
+              <textarea id="set_heroTitle" rows="2" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm font-semibold"></textarea>
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-xs font-bold text-slate-600 mb-1">Hero Subtitle</label>
+              <input type="text" id="set_heroSubtitle" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm" />
+            </div>
+            <div class="md:col-span-2 pt-2 border-t border-slate-100">
+              <label class="inline-flex items-center gap-2 text-sm font-bold cursor-pointer">
+                <input type="checkbox" id="set_bannerEnabled" class="w-4 h-4 accent-[#003580]" />
+                <span>Show Top Yellow Announcement Banner</span>
+              </label>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-600 mb-1">Banner Text</label>
+              <input type="text" id="set_bannerText" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-600 mb-1">Banner Link (e.g. /dhaka-flights-today)</label>
+              <input type="text" id="set_bannerLink" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-600 mb-1">Google Search Console Verification Code</label>
+              <input type="text" id="set_gscMeta" placeholder="Paste only content value" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-600 mb-1">Google Analytics Measurement ID (G-XXXX)</label>
+              <input type="text" id="set_gaId" placeholder="G-XXXXXXXXXX" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-600 mb-1">Support Email (Contact Page)</label>
+              <input type="email" id="set_supportEmail" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-600 mb-1">Footer Tagline</label>
+              <input type="text" id="set_footerText" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm" />
+            </div>
+          </div>
+          <button onclick="saveSettings()" class="bg-[#FFD200] hover:bg-[#f2c600] text-slate-900 font-extrabold px-6 py-3 rounded-xl">Save Settings</button>
+        </section>
+
+        <!-- 2. SEO ROUTE PAGES -->
+        <section id="panel-routes" class="hidden space-y-4">
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-xl font-extrabold text-slate-900">SEO Route Landing Pages (/flights/...)</h2>
+              <button onclick="newRoute()" class="bg-[#003580] text-white text-xs font-bold px-4 py-2 rounded-xl">+ Add New Route</button>
+            </div>
+            <div id="routesList" class="space-y-2"></div>
+          </div>
+
+          <div id="routeEditor" class="hidden bg-white rounded-2xl border border-blue-300 p-6 shadow-sm space-y-3">
+            <h3 class="font-extrabold text-lg text-slate-900">Edit / Create SEO Route</h3>
+            <input type="hidden" id="rt_idx" />
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div><label class="text-xs font-bold">URL Slug (e.g. dhaka-to-riyadh)</label><input id="rt_slug" class="w-full border rounded-lg px-3 py-2 text-sm" /></div>
+              <div><label class="text-xs font-bold">From IATA (DAC)</label><input id="rt_origin" maxlength="3" class="w-full border rounded-lg px-3 py-2 text-sm uppercase" /></div>
+              <div><label class="text-xs font-bold">To IATA (RUH)</label><input id="rt_dest" maxlength="3" class="w-full border rounded-lg px-3 py-2 text-sm uppercase" /></div>
+              <div><label class="text-xs font-bold">City Name</label><input id="rt_city" class="w-full border rounded-lg px-3 py-2 text-sm" /></div>
+              <div><label class="text-xs font-bold">Country</label><input id="rt_country" class="w-full border rounded-lg px-3 py-2 text-sm" /></div>
+              <div><label class="text-xs font-bold">Flight Time (e.g. 6h 10m)</label><input id="rt_duration" class="w-full border rounded-lg px-3 py-2 text-sm" /></div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div><label class="text-xs font-bold">Airlines on Route</label><input id="rt_airlines" class="w-full border rounded-lg px-3 py-2 text-sm" /></div>
+              <div><label class="text-xs font-bold">Cheapest Months</label><input id="rt_cheapestMonth" class="w-full border rounded-lg px-3 py-2 text-sm" /></div>
+            </div>
+            <div><label class="text-xs font-bold">Short Route Summary</label><input id="rt_summary" class="w-full border rounded-lg px-3 py-2 text-sm" /></div>
+            <div><label class="text-xs font-bold">Detailed Travel Tips</label><textarea id="rt_tips" rows="3" class="w-full border rounded-lg px-3 py-2 text-sm"></textarea></div>
+            <div class="flex items-center gap-6">
+              <label class="inline-flex items-center gap-2 text-sm font-bold"><input type="checkbox" id="rt_direct" /> Direct Flights Available</label>
+              <label class="inline-flex items-center gap-2 text-sm font-bold"><input type="checkbox" id="rt_published" checked /> Published (Live)</label>
+            </div>
+            <div class="flex gap-2 pt-2">
+              <button onclick="saveRoute()" class="bg-[#FFD200] text-slate-900 font-extrabold px-5 py-2.5 rounded-xl text-sm">Save Route</button>
+              <button onclick="document.getElementById('routeEditor').classList.add('hidden')" class="bg-slate-200 px-4 py-2.5 rounded-xl text-sm font-bold">Cancel</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. GUIDES / BLOG -->
+        <section id="panel-guides" class="hidden space-y-4">
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-xl font-extrabold text-slate-900">Travel Guides &amp; Blog (/guides/...)</h2>
+              <button onclick="newGuide()" class="bg-[#003580] text-white text-xs font-bold px-4 py-2 rounded-xl">+ Write New Guide</button>
+            </div>
+            <div id="guidesList" class="space-y-2"></div>
+          </div>
+
+          <div id="guideEditor" class="hidden bg-white rounded-2xl border border-blue-300 p-6 shadow-sm space-y-3">
+            <h3 class="font-extrabold text-lg text-slate-900">Edit / Publish Guide</h3>
+            <input type="hidden" id="gd_idx" />
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div><label class="text-xs font-bold">URL Slug</label><input id="gd_slug" class="w-full border rounded-lg px-3 py-2 text-sm" /></div>
+              <div><label class="text-xs font-bold">Category</label><input id="gd_category" class="w-full border rounded-lg px-3 py-2 text-sm" /></div>
+            </div>
+            <div><label class="text-xs font-bold">Article Title</label><input id="gd_title" class="w-full border rounded-lg px-3 py-2 text-sm" /></div>
+            <div><label class="text-xs font-bold">Short Summary</label><input id="gd_summary" class="w-full border rounded-lg px-3 py-2 text-sm" /></div>
+            <div><label class="text-xs font-bold">Article Content (Separate paragraphs with Enter)</label><textarea id="gd_body" rows="6" class="w-full border rounded-lg px-3 py-2 text-sm"></textarea></div>
+            <label class="inline-flex items-center gap-2 text-sm font-bold"><input type="checkbox" id="gd_published" checked /> Published</label>
+            <div class="flex gap-2 pt-2">
+              <button onclick="saveGuide()" class="bg-[#FFD200] text-slate-900 font-extrabold px-5 py-2.5 rounded-xl text-sm">Publish Guide</button>
+              <button onclick="document.getElementById('guideEditor').classList.add('hidden')" class="bg-slate-200 px-4 py-2.5 rounded-xl text-sm font-bold">Cancel</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. FAQS -->
+        <section id="panel-faqs" class="hidden bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+          <h2 class="text-xl font-extrabold text-slate-900">Homepage FAQs (Google Schema Enabled)</h2>
+          <div id="faqsList" class="space-y-3"></div>
+          <div class="pt-4 border-t border-slate-200 space-y-2">
+            <h3 class="text-sm font-bold">Add New FAQ</h3>
+            <input id="faq_q" placeholder="Question..." class="w-full border rounded-xl px-3 py-2 text-sm" />
+            <textarea id="faq_a" rows="2" placeholder="Answer..." class="w-full border rounded-xl px-3 py-2 text-sm"></textarea>
+            <button onclick="addFaq()" class="bg-[#003580] text-white font-bold px-5 py-2.5 rounded-xl text-sm">Add &amp; Save FAQ</button>
+          </div>
+        </section>
+
+        <!-- 5. ALERTS -->
+        <section id="panel-alerts" class="hidden bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xl font-extrabold text-slate-900">Price Alert Subscribers (<span id="alertsCount">0</span>)</h2>
+            <button onclick="exportAlertsCsv()" class="bg-emerald-600 text-white text-xs font-bold px-4 py-2 rounded-xl">Download CSV</button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead><tr class="border-b text-xs text-slate-500 uppercase"><th class="py-2">Email</th><th>Route</th><th>Max Budget</th><th>Date</th><th></th></tr></thead>
+              <tbody id="alertsTableBody" class="divide-y"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- 6. TOOLS -->
+        <section id="panel-tools" class="hidden bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+          <h2 class="text-xl font-extrabold text-slate-900">Cache &amp; SEO Quick Tools</h2>
+          <div class="flex flex-wrap gap-3">
+            <button onclick="clearScheduleCache()" class="bg-[#FFD200] text-slate-900 font-extrabold px-5 py-3 rounded-xl text-sm">Refresh Live DAC Airport Cache</button>
+            <a href="/sitemap.xml" target="_blank" class="bg-slate-100 hover:bg-slate-200 font-bold px-5 py-3 rounded-xl text-sm">Open Sitemap.xml ↗</a>
+            <a href="/robots.txt" target="_blank" class="bg-slate-100 hover:bg-slate-200 font-bold px-5 py-3 rounded-xl text-sm">Open Robots.txt ↗</a>
+          </div>
+          <p id="clearStatus" class="text-sm font-bold text-emerald-700"></p>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="/js/admin.js"></script>
+</body>
+</html>
