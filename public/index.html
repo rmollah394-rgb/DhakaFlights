@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DhakaFlights.com — Compare Cheap Flights from Dhaka & Worldwide</title>
+  <meta name="description" content="Compare airfares across hundreds of airlines and travel agencies from Dhaka (DAC) and worldwide. Find the cheapest flights, flexible dates, and price drop alerts." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .autocomplete-list { max-height: 260px; overflow-y: auto; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased">
+
+  <!-- Top Navbar -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2">
+        <span class="bg-blue-700 text-white p-2 rounded-lg font-bold text-lg leading-none">✈</span>
+        <span class="text-xl font-extrabold tracking-tight text-slate-900">
+          Dhaka<span class="text-blue-600">Flights</span><span class="text-slate-400 text-sm font-semibold">.com</span>
+        </span>
+      </a>
+      <nav class="hidden md:flex items-center gap-7 text-sm font-semibold text-slate-600">
+        <a href="#search" class="text-blue-700">Flights</a>
+        <a href="#deals" class="hover:text-blue-700 transition">Dhaka Deals</a>
+        <a href="#when-to-fly" class="hover:text-blue-700 transition">When to Fly</a>
+        <a href="#alerts" class="hover:text-blue-700 transition">Price Alerts</a>
+      </nav>
+      <a href="https://search.dhakaflights.com" class="bg-blue-50 text-blue-700 hover:bg-blue-100 px-4 py-2 rounded-lg text-sm font-semibold transition">
+        Live Search ↗
+      </a>
+    </div>
+  </header>
+
+  <!-- Hero & Flight Search Widget (FareCompare Style) -->
+  <section id="search" class="bg-gradient-to-br from-blue-900 via-blue-800 to-sky-700 text-white pt-10 pb-16 px-4">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-8">
+        <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight mb-3">
+          Compare Cheap Flights from Dhaka &amp; Worldwide
+        </h1>
+        <p class="text-blue-100 text-base sm:text-lg max-w-2xl mx-auto">
+          Search 200+ airlines and travel sites in one click to find the lowest airfare in BDT (৳).
+        </p>
+      </div>
+
+      <!-- Search Card -->
+      <div class="bg-white text-slate-800 rounded-2xl shadow-2xl p-5 sm:p-7">
+        <!-- Trip Options Row -->
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-5 pb-4 border-b border-slate-100">
+          <div class="flex items-center gap-2">
+            <button type="button" id="btnRoundTrip" onclick="setTripType('round')" class="px-4 py-2 rounded-full text-sm font-semibold bg-blue-600 text-white transition">
+              Round-trip
+            </button>
+            <button type="button" id="btnOneWay" onclick="setTripType('oneway')" class="px-4 py-2 rounded-full text-sm font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+              One-way
+            </button>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-3 text-sm">
+            <select id="cabinClass" class="border border-slate-200 rounded-lg px-3 py-2 font-medium bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="">Economy</option>
+              <option value="w">Premium Economy</option>
+              <option value="c">Business Class</option>
+              <option value="f">First Class</option>
+            </select>
+
+            <div class="relative">
+              <button type="button" onclick="togglePaxMenu()" id="paxSummary" class="border border-slate-200 rounded-lg px-3 py-2 font-medium bg-slate-50 hover:bg-slate-100 flex items-center gap-2">
+                <span>1 Adult</span>
+                <span class="text-xs">▼</span>
+              </button>
+              <div id="paxMenu" class="hidden absolute right-0 mt-2 w-64 bg-white border border-slate-200 rounded-xl shadow-xl p-4 z-30 space-y-3">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <div class="font-semibold text-sm">Adults</div>
+                    <div class="text-xs text-slate-400">12+ years</div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <button type="button" onclick="updatePax('adults', -1)" class="w-7 h-7 rounded-full border border-slate-300 font-bold">-</button>
+                    <span id="adultsCount" class="w-5 text-center font-semibold">1</span>
+                    <button type="button" onclick="updatePax('adults', 1)" class="w-7 h-7 rounded-full border border-slate-300 font-bold">+</button>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div>
+                    <div class="font-semibold text-sm">Children</div>
+                    <div class="text-xs text-slate-400">2–11 years</div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <button type="button" onclick="updatePax('children', -1)" class="w-7 h-7 rounded-full border border-slate-300 font-bold">-</button>
+                    <span id="childrenCount" class="w-5 text-center font-semibold">0</span>
+                    <button type="button" onclick="updatePax('children', 1)" class="w-7 h-7 rounded-full border border-slate-300 font-bold">+</button>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div>
+                    <div class="font-semibold text-sm">Infants</div>
+                    <div class="text-xs text-slate-400">Under 2 years</div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <button type="button" onclick="updatePax('infants', -1)" class="w-7 h-7 rounded-full border border-slate-300 font-bold">-</button>
+                    <span id="infantsCount" class="w-5 text-center font-semibold">0</span>
+                    <button type="button" onclick="updatePax('infants', 1)" class="w-7 h-7 rounded-full border border-slate-300 font-bold">+</button>
+                  </div>
+                </div>
+                <button type="button" onclick="togglePaxMenu()" class="w-full bg-blue-600 text-white py-1.5 rounded-lg text-sm font-semibold">Done</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Inputs Grid -->
+        <form id="flightForm" onsubmit="submitSearch(event)" class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+          <!-- Origin -->
+          <div class="md:col-span-3 relative">
+            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">From</label>
+            <input type="text" id="originInput" autocomplete="off" value="Dhaka (DAC)"
+              onfocus="openDropdown('origin')" oninput="filterAirports('origin')"
+              class="w-full border border-slate-300 rounded-xl px-4 py-3 font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600" placeholder="City or Airport (e.g. DAC)" required />
+            <input type="hidden" id="originCode" value="DAC" />
+            <div id="originList" class="hidden autocomplete-list absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-30"></div>
+          </div>
+
+          <!-- Swap Button -->
+          <div class="md:col-span-1 flex justify-center">
+            <button type="button" onclick="swapAirports()" title="Swap airports"
+              class="w-10 h-10 rounded-full border border-slate-200 bg-slate-50 hover:bg-blue-50 hover:border-blue-300 text-blue-700 font-bold flex items-center justify-center transition">
+              ⇄
+            </button>
+          </div>
+
+          <!-- Destination -->
+          <div class="md:col-span-3 relative">
+            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">To</label>
+            <input type="text" id="destInput" autocomplete="off" value="Dubai (DXB)"
+              onfocus="openDropdown('dest')" oninput="filterAirports('dest')"
+              class="w-full border border-slate-300 rounded-xl px-4 py-3 font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600" placeholder="Where to? (e.g. DXB, KUL)" required />
+            <input type="hidden" id="destCode" value="DXB" />
+            <div id="destList" class="hidden autocomplete-list absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-30"></div>
+          </div>
+
+          <!-- Departure Date -->
+          <div class="md:col-span-2">
+            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Depart</label>
+            <input type="date" id="departDate" required
+              class="w-full border border-slate-300 rounded-xl px-3 py-3 font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600" />
+          </div>
+
+          <!-- Return Date -->
+          <div class="md:col-span-2" id="returnDateWrap">
+            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Return</label>
+            <input type="date" id="returnDate"
+              class="w-full border border-slate-300 rounded-xl px-3 py-3 font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600" />
+          </div>
+
+          <!-- Submit -->
+          <div class="md:col-span-1">
+            <button type="submit"
+              class="w-full bg-orange-500 hover:bg-orange-600 text-white font-extrabold py-3.5 px-4 rounded-xl shadow-md transition flex items-center justify-center">
+              Search
+            </button>
+          </div>
+        </form>
+
+        <p id="formError" class="hidden text-red-600 text-sm font-semibold mt-3"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cheapest Flights from Dhaka -->
+  <section id="deals" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+      <div>
+        <span class="text-xs font-bold uppercase tracking-wider text-blue-600">Updated Fares</span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">
+          Popular Flight Deals from Dhaka (DAC)
+        </h2>
+        <p class="text-slate-500 text-sm mt-1">Click any destination to compare live prices across airlines and OTAs.</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <label class="text-sm font-semibold text-slate-600">From:</label>
+        <select id="dealsOrigin" onchange="loadDeals(this.value)" class="border border-slate-300 rounded-lg px-3 py-2 text-sm font-semibold bg-white">
+          <option value="DAC">Dhaka (DAC)</option>
+          <option value="CGP">Chattogram (CGP)</option>
+          <option value="ZYL">Sylhet (ZYL)</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="dealsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div class="col-span-full text-center py-12 text-slate-400 font-medium">Loading cheapest fares from Dhaka...</div>
+    </div>
+  </section>
+
+  <!-- When to Fly / Travel Tips Section -->
+  <section id="when-to-fly" class="bg-white border-y border-slate-200 py-14">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-extrabold text-slate-900 mb-6">Smart Tips to Fly Cheaper from Bangladesh</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200">
+          <div class="text-2xl mb-2">📅</div>
+          <h3 class="font-bold text-lg mb-1">Book 4–6 Weeks Ahead</h3>
+          <p class="text-sm text-slate-600">International tickets from Dhaka (Dubai, Kuala Lumpur, Singapore) are usually cheapest 30–45 days before departure.</p>
+        </div>
+        <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200">
+          <div class="text-2xl mb-2">🛫</div>
+          <h3 class="font-bold text-lg mb-1">Compare Mid-Week Flights</h3>
+          <p class="text-sm text-slate-600">Tuesdays and Wednesdays often have lower fares compared to Thursday or Saturday departures out of HSIA (DAC).</p>
+        </div>
+        <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200">
+          <div class="text-2xl mb-2">🧳</div>
+          <h3 class="font-bold text-lg mb-1">Check Baggage Included</h3>
+          <p class="text-sm text-slate-600">Always compare total ticket cost including 20kg–30kg checked luggage before booking low-cost carriers.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Price Alert Banner -->
+  <section id="alerts" class="max-w-5xl mx-auto px-4 py-14">
+    <div class="bg-blue-900 text-white rounded-3xl p-8 sm:p-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
+      <div>
+        <span class="bg-blue-700 text-blue-100 text-xs font-bold px-3 py-1 rounded-full uppercase">Coming in Next Update</span>
+        <h3 class="text-2xl font-extrabold mt-3">Fare Drop Alerts for Dhaka Routes</h3>
+        <p class="text-blue-200 text-sm mt-1 max-w-lg">Get instant email notifications whenever airfare drops for Dubai, Kuala Lumpur, London, or Cox's Bazar.</p>
+      </div>
+      <a href="https://search.dhakaflights.com" class="shrink-0 bg-orange-500 hover:bg-orange-600 text-white font-bold px-6 py-3.5 rounded-xl transition">
+        Compare Live Fares Now
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-slate-900 text-slate-400 py-10 px-4">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm">
+      <div>
+        <span class="text-white font-bold">DhakaFlights.com</span> — Independent Flight Comparison Search Engine.
+      </div>
+      <div>&copy; <span id="year"></span> DhakaFlights.com. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <script>
+    const AIRPORTS = [
+      { code: "DAC", city: "Dhaka", name: "Hazrat Shahjalal Intl", country: "Bangladesh" },
+      { code: "CGP", city: "Chattogram", name: "Shah Amanat Intl", country: "Bangladesh" },
+      { code: "ZYL", city: "Sylhet", name: "Osmani Intl", country: "Bangladesh" },
+      { code: "CXB", city: "Cox's Bazar", name: "Cox's Bazar Airport", country: "Bangladesh" },
+      { code: "SPD", city: "Saidpur", name: "Saidpur Airport", country: "Bangladesh" },
+      { code: "JSR", city: "Jashore", name: "Jashore Airport", country: "Bangladesh" },
+      { code: "RJH", city: "Rajshahi", name: "Shah Makhdum", country: "Bangladesh" },
+      { code: "DXB", city: "Dubai", name: "Dubai Intl", country: "UAE" },
+      { code: "AUH", city: "Abu Dhabi", name: "Zayed Intl", country: "UAE" },
+      { code: "SHJ", city: "Sharjah", name: "Sharjah Intl", country: "UAE" },
+      { code: "DOH", city: "Doha", name: "Hamad Intl", country: "Qatar" },
+      { code: "RUH", city: "Riyadh", name: "King Khalid Intl", country: "Saudi Arabia" },
+      { code: "JED", city: "Jeddah", name: "King Abdulaziz Intl", country: "Saudi Arabia" },
+      { code: "DMM", city: "Dammam", name: "King Fahd Intl", country: "Saudi Arabia" },
+      { code: "KWI", city: "Kuwait City", name: "Kuwait Intl", country: "Kuwait" },
+      { code: "MCT", city: "Muscat", name: "Muscat Intl", country: "Oman" },
+      { code: "KUL", city: "Kuala Lumpur", name: "KLIA", country: "Malaysia" },
+      { code: "SIN", city: "Singapore", name: "Changi Airport", country: "Singapore" },
+      { code: "BKK", city: "Bangkok", name: "Suvarnabhumi Intl", country: "Thailand" },
+      { code: "HKT", city: "Phuket", name: "Phuket Intl", country: "Thailand" },
+      { code: "CCU", city: "Kolkata", name: "Netaji Subhas Chandra Bose", country: "India" },
+      { code: "DEL", city: "New Delhi", name: "Indira Gandhi Intl", country: "India" },
+      { code: "BOM", city: "Mumbai", name: "Chhatrapati Shivaji", country: "India" },
+      { code: "KTM", city: "Kathmandu", name: "Tribhuvan Intl", country: "Nepal" },
+      { code: "MLE", city: "Male", name: "Velana Intl", country: "Maldives" },
+      { code: "CMB", city: "Colombo", name: "Bandaranaike Intl", country: "Sri Lanka" },
+      { code: "LHR", city: "London", name: "Heathrow Airport", country: "UK" },
+      { code: "MAN", city: "Manchester", name: "Manchester Airport", country: "UK" },
+      { code: "IST", city: "Istanbul", name: "Istanbul Airport", country: "Turkey" },
+      { code: "JFK", city: "New York", name: "John F. Kennedy", country: "USA" },
+      { code: "YYZ", city: "Toronto", name: "Pearson Intl", country: "Canada" },
+      { code: "SYD", city: "Sydney", name: "Kingsford Smith", country: "Australia" },
+      { code: "MEL", city: "Melbourne", name: "Melbourne Airport", country: "Australia" },
+      { code: "CAN", city: "Guangzhou", name: "Baiyun Intl", country: "China" },
+      { code: "HKG", city: "Hong Kong", name: "Hong Kong Intl", country: "Hong Kong" },
+      { code: "ICN", city: "Seoul", name: "Incheon Intl", country: "South Korea" },
+      { code: "NRT", city: "Tokyo", name: "Narita Intl", country: "Japan" }
+    ];
+
+    const AIRPORT_MAP = Object.fromEntries(AIRPORTS.map(a => [a.code, a]));
+    const AIRLINE_NAMES = {
+      BG: "Biman Bangladesh", BS: "US-Bangla Airlines", EK: "Emirates", QR: "Qatar Airways",
+      EY: "Etihad Airways", SV: "Saudia", SQ: "Singapore Airlines", MH: "Malaysia Airlines",
+      OD: "Batik Air", AK: "AirAsia", TG: "Thai Airways", FZ: "flydubai", G9: "Air Arabia",
+      TK: "Turkish Airlines", "6E": "IndiGo", AI: "Air India", UL: "SriLankan", CZ: "China Southern"
+    };
+
+    let tripType = "round";
+    const pax = { adults: 1, children: 0, infants: 0 };
+
+    // Set default dates (+14 and +21 days)
+    function initDates() {
+      const today = new Date();
+      const dep = new Date(today.getTime() + 14 * 86400000);
+      const ret = new Date(today.getTime() + 21 * 86400000);
+      const fmt = d => d.toISOString().split("T")[0];
+      const depEl = document.getElementById("departDate");
+      const retEl = document.getElementById("returnDate");
+      depEl.min = fmt(today);
+      depEl.value = fmt(dep);
+      retEl.min = fmt(today);
+      retEl.value = fmt(ret);
+      document.getElementById("year").textContent = today.getFullYear();
+    }
+
+    function setTripType(type) {
+      tripType = type;
+      const btnRound = document.getElementById("btnRoundTrip");
+      const btnOne = document.getElementById("btnOneWay");
+      const retWrap = document.getElementById("returnDateWrap");
+      if (type === "round") {
+        btnRound.className = "px-4 py-2 rounded-full text-sm font-semibold bg-blue-600 text-white transition";
+        btnOne.className = "px-4 py-2 rounded-full text-sm font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition";
+        retWrap.classList.remove("hidden");
+      } else {
+        btnOne.className = "px-4 py-2 rounded-full text-sm font-semibold bg-blue-600 text-white transition";
+        btnRound.className = "px-4 py-2 rounded-full text-sm font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition";
+        retWrap.classList.add("hidden");
+      }
+    }
+
+    function togglePaxMenu() {
+      document.getElementById("paxMenu").classList.toggle("hidden");
+    }
+
+    function updatePax(type, delta) {
+      const next = pax[type] + delta;
+      if (type === "adults" && (next < 1 || next > 9)) return;
+      if (type !== "adults" && (next < 0 || next > 8)) return;
+      if (type === "infants" && next > pax.adults) return;
+      pax[type] = next;
+      document.getElementById("adultsCount").textContent = pax.adults;
+      document.getElementById("childrenCount").textContent = pax.children;
+      document.getElementById("infantsCount").textContent = pax.infants;
+      const total = pax.adults + pax.children + pax.infants;
+      document.getElementById("paxSummary").firstElementChild.textContent = `${total} ${total === 1 ? "Passenger" : "Passengers"}`;
+    }
+
+    function openDropdown(field) {
+      filterAirports(field);
+      document.getElementById(field + "List").classList.remove("hidden");
+    }
+
+    function filterAirports(field) {
+      const input = document.getElementById(field + "Input").value.trim().toLowerCase();
+      const listEl = document.getElementById(field + "List");
+      const hiddenEl = document.getElementById(field + "Code");
+
+      // Allow direct 3-letter code entry
+      if (/^[a-z]{3}$/i.test(input)) {
+        hiddenEl.value = input.toUpperCase();
+      } else {
+        const match = input.match(/\(([a-z]{3})\)/i);
+        if (match) hiddenEl.value = match[1].toUpperCase();
+      }
+
+      const matches = AIRPORTS.filter(a =>
+        !input ||
+        a.city.toLowerCase().includes(input) ||
+        a.code.toLowerCase().includes(input) ||
+        a.country.toLowerCase().includes(input) ||
+        a.name.toLowerCase().includes(input)
+      ).slice(0, 8);
+
+      listEl.innerHTML = matches.map(a => `
+        <button type="button" onclick="selectAirport('${field}', '${a.code}', '${a.city.replace(/'/g, "\\'")}')"
+          class="w-full text-left px-4 py-2.5 hover:bg-blue-50 flex items-center justify-between border-b border-slate-100 last:border-0">
+          <div>
+            <div class="font-bold text-sm text-slate-900">${a.city}, ${a.country}</div>
+            <div class="text-xs text-slate-500">${a.name}</div>
+          </div>
+          <span class="bg-blue-100 text-blue-800 text-xs font-extrabold px-2 py-1 rounded">${a.code}</span>
+        </button>
+      `).join("") || `<div class="px-4 py-3 text-xs text-slate-500">Type a 3-letter IATA airport code (e.g. DAC, DXB)</div>`;
+      listEl.classList.remove("hidden");
+    }
+
+    function selectAirport(field, code, city) {
+      document.getElementById(field + "Input").value = `${city} (${code})`;
+      document.getElementById(field + "Code").value = code;
+      document.getElementById(field + "List").classList.add("hidden");
+    }
+
+    function swapAirports() {
+      const oIn = document.getElementById("originInput");
+      const oCd = document.getElementById("originCode");
+      const dIn = document.getElementById("destInput");
+      const dCd = document.getElementById("destCode");
+      [oIn.value, dIn.value] = [dIn.value, oIn.value];
+      [oCd.value, dCd.value] = [dCd.value, oCd.value];
+    }
+
+    function toDDMM(dateStr) {
+      const [, m, d] = dateStr.split("-");
+      return `${d}${m}`;
+    }
+
+    function buildWhiteLabelUrl(origin, dest, depDate, retDate, cabin, adults, children, infants) {
+      const paxStr = (children > 0 || infants > 0) ? `${adults}${children}${infants}` : `${adults}`;
+      const retPart = retDate ? toDDMM(retDate) : "";
+      const query = `${origin}${toDDMM(depDate)}${dest}${retPart}${cabin}${paxStr}`;
+      return `https://search.dhakaflights.com/?flightSearch=${query}`;
+    }
+
+    function submitSearch(e) {
+      e.preventDefault();
+      const errEl = document.getElementById("formError");
+      errEl.classList.add("hidden");
+
+      const origin = document.getElementById("originCode").value.trim().toUpperCase();
+      const dest = document.getElementById("destCode").value.trim().toUpperCase();
+      const depDate = document.getElementById("departDate").value;
+      const retDate = tripType === "round" ? document.getElementById("returnDate").value : "";
+      const cabin = document.getElementById("cabinClass").value;
+
+      if (!/^[A-Z]{3}$/.test(origin) || !/^[A-Z]{3}$/.test(dest)) {
+        errEl.textContent = "Please select valid 3-letter departure and destination airports.";
+        errEl.classList.remove("hidden");
+        return;
+      }
+      if (origin === dest) {
+        errEl.textContent = "Departure and destination airports cannot be the same.";
+        errEl.classList.remove("hidden");
+        return;
+      }
+      if (tripType === "round" && retDate < depDate) {
+        errEl.textContent = "Return date must be on or after the departure date.";
+        errEl.classList.remove("hidden");
+        return;
+      }
+
+      const targetUrl = buildWhiteLabelUrl(origin, dest, depDate, retDate, cabin, pax.adults, pax.children, pax.infants);
+      window.location.href = targetUrl;
+    }
+
+    async function loadDeals(origin = "DAC") {
+      const grid = document.getElementById("dealsGrid");
+      grid.innerHTML = `<div class="col-span-full text-center py-10 text-slate-400">Loading fares...</div>`;
+      try {
+        const res = await fetch(`/api/deals?origin=${origin}`);
+        const json = await res.json();
+        const deals = json.deals || [];
+
+        grid.innerHTML = deals.slice(0, 8).map(item => {
+          const info = AIRPORT_MAP[item.destination] || {};
+          const city = item.city || info.city || item.destination;
+          const country = item.country || info.country || "";
+          const depRaw = (item.departure_at || new Date(Date.now() + 14 * 86400000).toISOString()).slice(0, 10);
+          const airline = AIRLINE_NAMES[item.airline] || item.airline || "Multiple Airlines";
+          const stops = item.transfers === 0 ? "Direct" : `${item.transfers || 1} Stop`;
+          const priceHtml = item.price
+            ? `<div class="text-xl font-extrabold text-blue-700">৳ ${Number(item.price).toLocaleString()}</div>`
+            : `<div class="text-sm font-bold text-blue-700">Check Live Price →</div>`;
+          const wlLink = buildWhiteLabelUrl(origin, item.destination, depRaw, "", "", 1, 0, 0);
+
+          return `
+            <a href="${wlLink}" class="group bg-white border border-slate-200 hover:border-blue-400 rounded-2xl p-5 shadow-sm hover:shadow-lg transition flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between text-xs font-bold text-slate-400 mb-2">
+                  <span>${origin} → ${item.destination}</span>
+                  <span class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full">${stops}</span>
+                </div>
+                <h3 class="text-lg font-extrabold text-slate-900 group-hover:text-blue-700 transition">${city}</h3>
+                <p class="text-xs text-slate-500 mb-4">${country ? country + " • " : ""}${airline}</p>
+              </div>
+              <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+                <div>
+                  <div class="text-[11px] text-slate-400">Depart ${depRaw}</div>
+                  ${priceHtml}
+                </div>
+                <span class="bg-blue-50 group-hover:bg-blue-600 group-hover:text-white text-blue-700 text-xs font-bold px-3 py-2 rounded-lg transition">Book</span>
+              </div>
+            </a>
+          `;
+        }).join("");
+      } catch (e) {
+        grid.innerHTML = `<div class="col-span-full text-center py-8 text-slate-500">Unable to load deals right now. Use the search bar above!</div>`;
+      }
+    }
+
+    // Close dropdowns when clicking outside
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest("#originInput") && !e.target.closest("#originList")) {
+        document.getElementById("originList").classList.add("hidden");
+      }
+      if (!e.target.closest("#destInput") && !e.target.closest("#destList")) {
+        document.getElementById("destList").classList.add("hidden");
+      }
+      if (!e.target.closest("#paxSummary") && !e.target.closest("#paxMenu")) {
+        document.getElementById("paxMenu").classList.add("hidden");
+      }
+    });
+
+    initDates();
+    loadDeals("DAC");
+  </script>
+</body>
+</html>
