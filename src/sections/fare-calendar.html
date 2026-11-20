@@ -1,0 +1,35 @@
+<section id="calendar" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-6">
+  <div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm">
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
+      <div>
+        <span class="inline-block bg-blue-50 text-blue-700 text-xs font-extrabold px-3 py-1 rounded-full uppercase">When to Fly</span>
+        <h2 class="text-2xl font-extrabold text-slate-900 mt-2">Lowest Airfare Calendar from Dhaka</h2>
+        <p class="text-sm text-slate-500">Spot the cheapest departure days in the month. Click any green or blue bar to book that exact date.</p>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2.5">
+        <select id="calOrigin" onchange="loadCalendar()" class="border border-slate-300 rounded-xl px-3 py-2 text-sm font-bold bg-slate-50">
+          <option value="DAC">From Dhaka (DAC)</option>
+          <option value="CGP">From Chattogram (CGP)</option>
+          <option value="ZYL">From Sylhet (ZYL)</option>
+        </select>
+        <select id="calDest" onchange="loadCalendar()" class="border border-slate-300 rounded-xl px-3 py-2 text-sm font-bold bg-slate-50">
+          <option value="DXB">To Dubai (DXB)</option>
+          <option value="KUL">To Kuala Lumpur (KUL)</option>
+          <option value="SIN">To Singapore (SIN)</option>
+          <option value="BKK">To Bangkok (BKK)</option>
+          <option value="DOH">To Doha (DOH)</option>
+          <option value="JED">To Jeddah (JED)</option>
+          <option value="CCU">To Kolkata (CCU)</option>
+          <option value="LHR">To London (LHR)</option>
+        </select>
+        <select id="calMonth" onchange="loadCalendar()" class="border border-slate-300 rounded-xl px-3 py-2 text-sm font-bold bg-slate-50"></select>
+      </div>
+    </div>
+
+    <div id="calendarChartWrap" class="bg-slate-50 border border-slate-200 rounded-2xl p-4 sm:p-6">
+      <div id="calendarSummary" class="flex flex-wrap items-center justify-between gap-3 mb-4 text-sm"></div>
+      <div id="calendarBars" class="flex items-end gap-1.5 sm:gap-2 h-48 overflow-x-auto pb-2 pt-6"></div>
+    </div>
+  </div>
+</section>
