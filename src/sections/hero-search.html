@@ -1,70 +1,132 @@
 {{ANNOUNCEMENT_BAR}}
-<section id="search" class="sky-hero text-white relative pb-14 sm:pb-20">
-  <header class="border-b border-white/15">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
-      <a href="/" class="flex items-center gap-2.5 group">
-        <svg class="w-9 h-9 shrink-0 drop-shadow" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M6 19.5L19.5 6H32C33.1 6 34 6.9 34 8V20.5L20.5 34C19.7 34.8 18.4 34.8 17.6 34L6 22.4C5.2 21.6 5.2 20.3 6 19.5Z" stroke="#FFD200" stroke-width="2.6" stroke-linejoin="round"/>
-          <circle cx="28" cy="12" r="2.2" fill="#FFD200"/>
-          <path d="M13 22L24 16L19 25L17 22L13 22Z" fill="#FFD200"/>
-        </svg>
-        <div class="leading-tight">
-          <div class="text-lg sm:text-xl font-extrabold tracking-tight text-white">DhakaFlights<span class="text-[#FFD200]">.com</span></div>
-          <div class="text-[11px] font-medium text-blue-100 hidden sm:block">Best Flights Prices</div>
+
+<!-- Top White Navbar -->
+<header class="bg-white/95 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-40 shadow-sm">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-[72px] flex items-center justify-between gap-4">
+    <!-- Logo -->
+    <a href="/" class="flex items-center gap-2.5 shrink-0">
+      <svg class="w-10 h-10 shrink-0" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M6 31C14 31 20 26 24 22C28 18 35 16 42 15" stroke="#0b3b75" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M12 31V24H16V31M18 31V20H22V31M24 31V23H28V31" stroke="#1a9d3f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M31 15L42 10L36 20L34 16.5L31 15Z" fill="#0b3b75"/>
+      </svg>
+      <div class="leading-none">
+        <div class="text-lg sm:text-xl font-extrabold tracking-tight text-[#082454]">
+          Dhaka<span class="text-[#1a9d3f]">Flights</span><span class="text-[#082454] font-bold">.com</span>
         </div>
+        <div class="text-[10px] font-semibold text-slate-400 tracking-wide mt-0.5 hidden sm:block">Fly Smart. Travel Better.</div>
+      </div>
+    </a>
+
+    <!-- Center Navigation -->
+    <nav class="hidden md:flex items-center gap-6 text-sm font-bold text-[#082454]">
+      <a href="/" aria-label="Home" class="w-10 h-9 rounded-xl bg-[#1557c0] hover:bg-[#0e449c] text-white flex items-center justify-center shadow-sm transition">
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+        </svg>
       </a>
 
-      <nav class="hidden md:flex items-center gap-7 text-sm font-semibold text-white/90">
-        <a href="#search" class="text-[#FFD200]">Flights</a>
-        <a href="#calendar" class="hover:text-[#FFD200] transition">Fare Calendar</a>
-        <a href="#deals" class="hover:text-[#FFD200] transition">Dhaka Deals</a>
-        <a href="/guides" class="hover:text-[#FFD200] transition">Guides</a>
-        <a href="#guides" class="hover:text-[#FFD200] transition">Travel Tips</a>
-      </nav>
-
-      <div class="flex items-center gap-2.5">
-        <div class="bg-white/15 backdrop-blur-sm rounded-lg p-0.5 flex items-center text-xs font-bold border border-white/20">
-          <button type="button" id="currBDT" onclick="setCurrency('bdt')" class="px-2.5 py-1.5 rounded-md bg-[#FFD200] text-slate-900 transition">BDT ৳</button>
-          <button type="button" id="currUSD" onclick="setCurrency('usd')" class="px-2.5 py-1.5 rounded-md text-white hover:bg-white/10 transition">USD $</button>
+      <div class="relative group py-2">
+        <button type="button" class="inline-flex items-center gap-1 hover:text-[#1557c0] transition">
+          <span>Flights</span>
+          <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div class="hidden group-hover:block absolute left-0 top-full w-52 bg-white border border-slate-200 rounded-2xl shadow-xl p-2 z-50 text-xs font-bold text-slate-700">
+          <a href="#search" class="block px-3 py-2 rounded-xl hover:bg-blue-50 hover:text-[#1557c0]">Search Flights</a>
+          <a href="/dhaka-flights-today" class="block px-3 py-2 rounded-xl hover:bg-blue-50 hover:text-[#1557c0]">Live DAC Airport Board</a>
+          <a href="#calendar" class="block px-3 py-2 rounded-xl hover:bg-blue-50 hover:text-[#1557c0]">Lowest Fare Calendar</a>
+          <a href="#deals" class="block px-3 py-2 rounded-xl hover:bg-blue-50 hover:text-[#1557c0]">Popular Deals</a>
         </div>
-        <button type="button" onclick="openAlertModal()" class="hidden sm:inline-flex items-center gap-1.5 bg-white/15 hover:bg-white/25 border border-white/25 text-white px-3.5 py-2 rounded-lg text-xs font-bold transition">
-          🔔 Price Alerts
+      </div>
+
+      <a href="/about" class="hover:text-[#1557c0] transition">About</a>
+
+      <div class="relative group py-2">
+        <button type="button" class="inline-flex items-center gap-1 hover:text-[#1557c0] transition">
+          <span>Help</span>
+          <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div class="hidden group-hover:block absolute left-0 top-full w-48 bg-white border border-slate-200 rounded-2xl shadow-xl p-2 z-50 text-xs font-bold text-slate-700">
+          <a href="/guides" class="block px-3 py-2 rounded-xl hover:bg-blue-50 hover:text-[#1557c0]">Travel Guides</a>
+          <a href="#guides" class="block px-3 py-2 rounded-xl hover:bg-blue-50 hover:text-[#1557c0]">FAQs &amp; Tips</a>
+          <a href="/privacy-policy" class="block px-3 py-2 rounded-xl hover:bg-blue-50 hover:text-[#1557c0]">Privacy Policy</a>
+          <a href="/terms" class="block px-3 py-2 rounded-xl hover:bg-blue-50 hover:text-[#1557c0]">Terms &amp; Conditions</a>
+        </div>
+      </div>
+
+      <a href="/contact" class="hover:text-[#1557c0] transition">Contact</a>
+    </nav>
+
+    <!-- Right Controls: Currency & Price Alert -->
+    <div class="flex items-center gap-2.5 shrink-0">
+      <div class="bg-[#eef3fb] border border-slate-200 rounded-xl p-0.5 flex items-center text-xs font-bold">
+        <button type="button" id="currBDT" onclick="setCurrency('bdt')" class="px-2.5 py-1.5 rounded-lg bg-[#1557c0] text-white transition flex items-center gap-1">
+          <span>🇧🇩</span><span>BDT</span>
+        </button>
+        <button type="button" id="currUSD" onclick="setCurrency('usd')" class="px-2.5 py-1.5 rounded-lg text-slate-700 hover:bg-white transition">
+          USD $
         </button>
       </div>
-    </div>
-  </header>
 
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-10 sm:pt-14">
-    <div class="max-w-2xl mb-7">
-      <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight leading-[1.12] drop-shadow-sm">
+      <button type="button" onclick="openAlertModal()" class="inline-flex items-center gap-1.5 bg-[#eef3fb] hover:bg-blue-100 border border-slate-200 text-[#082454] px-3.5 py-2 rounded-xl text-xs font-extrabold transition">
+        <span>🔔</span>
+        <span class="hidden sm:inline">Price Alerts</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Hero Banner + Floating Search Box -->
+<section id="search" class="hero-banner relative pt-10 pb-12 sm:pt-14 sm:pb-16">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <!-- Hero Text -->
+    <div class="max-w-xl mb-8 sm:mb-10">
+      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight leading-[1.1] text-[#082454]">
         {{HERO_TITLE}}
       </h1>
-      <p class="text-blue-100 text-sm sm:text-base mt-3">
-      {{HERO_SUBTITLE}}.
+      <p class="text-[#082454]/80 font-semibold text-sm sm:text-lg mt-3 leading-relaxed">
+        {{HERO_SUBTITLE}}
       </p>
     </div>
 
-    <div class="flex items-center gap-6 mb-3 pl-1">
-      <button type="button" id="tabRound" onclick="setTripType('round')" class="pb-2 text-sm sm:text-base font-bold text-white border-b-2 border-[#FFD200] transition">Round-Trip</button>
-      <button type="button" id="tabOne" onclick="setTripType('oneway')" class="pb-2 text-sm sm:text-base font-bold text-white/75 hover:text-white border-b-2 border-transparent transition">One-Way</button>
+    <!-- Trip Type Floating Pills -->
+    <div class="inline-flex flex-wrap items-center gap-2 mb-3">
+      <button type="button" id="tabRound" onclick="setTripType('round')"
+        class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-[#1557c0] text-white shadow-md transition">
+        <span>⇄</span><span>Round Trip</span>
+      </button>
+      <button type="button" id="tabOne" onclick="setTripType('oneway')"
+        class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-white/95 text-[#082454] hover:bg-white shadow-sm border border-slate-200/80 transition">
+        <span>✈️</span><span>One Way</span>
+      </button>
+      <a href="/dhaka-flights-today"
+        class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-white/95 text-[#082454] hover:bg-white shadow-sm border border-slate-200/80 transition">
+        <span class="w-2 h-2 rounded-full bg-[#1a9d3f]"></span><span>Live DAC Board</span>
+      </a>
     </div>
 
-    <div class="bg-[#05234d]/45 backdrop-blur-md border border-white/15 rounded-2xl p-3 sm:p-4 shadow-2xl">
+    <!-- Main Search Card -->
+    <div class="bg-white rounded-2xl sm:rounded-3xl p-2.5 sm:p-3 shadow-[0_14px_40px_rgba(8,36,84,0.12)] border border-slate-200/90">
       <form id="flightForm" onsubmit="submitSearch(event)">
-        <div class="grid grid-cols-1 lg:grid-cols-[1.2fr_1.2fr_1.05fr_0.95fr_145px] bg-white text-slate-900 rounded-xl shadow-lg divide-y lg:divide-y-0 lg:divide-x divide-slate-200 relative">
+        <div class="grid grid-cols-1 lg:grid-cols-[1.2fr_1.2fr_1.05fr_1fr_175px] gap-2 lg:gap-0 lg:divide-x divide-slate-200 items-stretch relative">
 
           <!-- FROM -->
-          <div class="relative px-4 py-3">
-            <label for="originInput" class="block text-[11px] font-semibold text-slate-500">From</label>
-            <input type="text" id="originInput" autocomplete="off" value="Dhaka, Bangladesh (DAC)"
-              onfocus="openDropdown('origin')" oninput="filterAirports('origin')"
-              class="w-full text-sm sm:text-[15px] font-bold text-slate-900 bg-transparent focus:outline-none truncate pr-6"
-              placeholder="Origin city or code" required />
+          <div class="relative px-3.5 py-2.5 rounded-xl lg:rounded-none hover:bg-slate-50/70 transition">
+            <label for="originInput" class="block text-[11px] font-bold text-[#1557c0] mb-0.5">From</label>
+            <div class="flex items-center gap-2">
+              <span class="text-slate-400 text-sm shrink-0">📍</span>
+              <input type="text" id="originInput" autocomplete="off" value="Dhaka, Bangladesh (DAC)"
+                onfocus="openDropdown('origin')" oninput="filterAirports('origin')"
+                class="w-full text-sm font-bold text-[#082454] bg-transparent focus:outline-none truncate pr-5"
+                placeholder="Origin city or code" required />
+            </div>
             <input type="hidden" id="originCode" value="DAC" />
-            <div id="originList" class="hidden autocomplete-list absolute left-0 right-0 top-full mt-2 bg-white border border-slate-200 rounded-xl shadow-2xl z-40"></div>
+            <div id="originList" class="hidden autocomplete-list absolute left-0 right-0 top-full mt-2 bg-white border border-slate-200 rounded-2xl shadow-2xl z-50"></div>
 
+            <!-- Swap Button -->
             <button type="button" onclick="swapAirports()" title="Swap airports"
-              class="w-9 h-9 rounded-full bg-[#0a3673] hover:bg-[#082a59] text-white ring-4 ring-white shadow-md flex items-center justify-center absolute right-4 -bottom-4 lg:bottom-auto lg:right-0 lg:top-1/2 lg:-translate-y-1/2 lg:translate-x-1/2 z-20 transition hover:scale-105">
+              class="w-8 h-8 rounded-full bg-white hover:bg-blue-50 text-[#1557c0] border border-slate-200 shadow-sm flex items-center justify-center absolute right-3 -bottom-4 lg:bottom-auto lg:right-0 lg:top-1/2 lg:-translate-y-1/2 lg:translate-x-1/2 z-20 transition hover:scale-105">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
               </svg>
@@ -72,53 +134,60 @@
           </div>
 
           <!-- TO -->
-          <div class="relative px-4 lg:pl-6 py-3">
-            <label for="destInput" class="block text-[11px] font-semibold text-slate-500">To</label>
-            <div class="flex items-center">
+          <div class="relative px-3.5 lg:pl-6 py-2.5 rounded-xl lg:rounded-none hover:bg-slate-50/70 transition">
+            <label for="destInput" class="block text-[11px] font-bold text-[#1557c0] mb-0.5">To</label>
+            <div class="flex items-center gap-2">
+              <span class="text-slate-400 text-sm shrink-0">📍</span>
               <input type="text" id="destInput" autocomplete="off" value="Dubai, UAE (DXB)"
                 onfocus="openDropdown('dest')" oninput="filterAirports('dest')"
-                class="w-full text-sm sm:text-[15px] font-bold text-slate-900 bg-transparent focus:outline-none truncate"
-                placeholder="Search for an airport or city" required />
-              <button type="button" onclick="clearDest()" title="Clear destination" class="text-slate-400 hover:text-slate-600 text-xs font-bold px-1">✕</button>
+                class="w-full text-sm font-bold text-[#082454] bg-transparent focus:outline-none truncate"
+                placeholder="Select Destination" required />
+              <button type="button" onclick="clearDest()" title="Clear destination" class="text-slate-400 hover:text-slate-700 text-xs font-bold px-1">✕</button>
             </div>
             <input type="hidden" id="destCode" value="DXB" />
-            <div id="destList" class="hidden autocomplete-list absolute left-0 right-0 top-full mt-2 bg-white border border-slate-200 rounded-xl shadow-2xl z-40"></div>
+            <div id="destList" class="hidden autocomplete-list absolute left-0 right-0 top-full mt-2 bg-white border border-slate-200 rounded-2xl shadow-2xl z-50"></div>
           </div>
 
           <!-- DATES -->
-          <div class="relative px-4 py-3">
+          <div class="relative px-3.5 py-2.5 rounded-xl lg:rounded-none hover:bg-slate-50/70 transition">
             <button type="button" onclick="toggleDatePopover()" class="w-full text-left focus:outline-none">
-              <span class="block text-[11px] font-semibold text-slate-500">Dates</span>
-              <span id="datesDisplay" class="block text-sm sm:text-[15px] font-bold text-slate-900 truncate">Loading...</span>
+              <span class="block text-[11px] font-bold text-[#1557c0] mb-0.5">Depart &amp; Return</span>
+              <span class="flex items-center gap-2">
+                <span class="text-slate-400 text-sm shrink-0">📅</span>
+                <span id="datesDisplay" class="block text-sm font-bold text-[#082454] truncate">Select Date</span>
+              </span>
             </button>
 
-            <div id="datePopover" class="hidden absolute left-0 lg:right-0 top-full mt-2 w-72 sm:w-80 bg-white border border-slate-200 rounded-2xl shadow-2xl p-4 z-40 text-slate-800">
+            <div id="datePopover" class="hidden absolute left-0 lg:right-0 top-full mt-3 w-72 sm:w-80 bg-white border border-slate-200 rounded-2xl shadow-2xl p-4 z-50 text-slate-800">
               <div class="space-y-3">
                 <div>
                   <label class="block text-xs font-bold text-slate-600 mb-1">Departure Date</label>
-                  <input type="date" id="departDate" onchange="syncDateDisplay()" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-semibold focus:ring-2 focus:ring-blue-600 focus:outline-none" />
+                  <input type="date" id="departDate" onchange="syncDateDisplay()" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm font-semibold focus:ring-2 focus:ring-[#1557c0] focus:outline-none" />
                 </div>
                 <div id="returnDateWrap">
                   <label class="block text-xs font-bold text-slate-600 mb-1">Return Date</label>
-                  <input type="date" id="returnDate" onchange="syncDateDisplay()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-semibold focus:ring-2 focus:ring-blue-600 focus:outline-none" />
+                  <input type="date" id="returnDate" onchange="syncDateDisplay()" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm font-semibold focus:ring-2 focus:ring-[#1557c0] focus:outline-none" />
                 </div>
                 <div class="flex items-center justify-between pt-1 gap-2">
                   <button type="button" onclick="setQuickTrip(7)" class="text-xs bg-slate-100 hover:bg-blue-50 text-slate-700 font-semibold px-2.5 py-1.5 rounded-lg">1 Week</button>
                   <button type="button" onclick="setQuickTrip(14)" class="text-xs bg-slate-100 hover:bg-blue-50 text-slate-700 font-semibold px-2.5 py-1.5 rounded-lg">2 Weeks</button>
-                  <button type="button" onclick="toggleDatePopover()" class="ml-auto bg-[#0a3673] text-white text-xs font-bold px-4 py-1.5 rounded-lg">Apply</button>
+                  <button type="button" onclick="toggleDatePopover()" class="ml-auto bg-[#1557c0] text-white text-xs font-bold px-4 py-1.5 rounded-lg">Apply</button>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- TRAVELERS & CABIN -->
-          <div class="relative px-4 py-3">
+          <!-- PASSENGERS -->
+          <div class="relative px-3.5 py-2.5 rounded-xl lg:rounded-none hover:bg-slate-50/70 transition">
             <button type="button" onclick="togglePaxPopover()" class="w-full text-left focus:outline-none">
-              <span class="block text-[11px] font-semibold text-slate-500">Travelers &amp; Cabin class</span>
-              <span id="paxDisplay" class="block text-sm sm:text-[15px] font-bold text-slate-900 truncate">1 Adult, Economy</span>
+              <span class="block text-[11px] font-bold text-[#1557c0] mb-0.5">Passengers</span>
+              <span class="flex items-center gap-2">
+                <span class="text-slate-400 text-sm shrink-0">👤</span>
+                <span id="paxDisplay" class="block text-sm font-bold text-[#082454] truncate">1 Adult, Economy</span>
+              </span>
             </button>
 
-            <div id="paxPopover" class="hidden absolute right-0 top-full mt-2 w-72 bg-white border border-slate-200 rounded-2xl shadow-2xl p-4 z-40 space-y-3 text-slate-800">
+            <div id="paxPopover" class="hidden absolute right-0 top-full mt-3 w-72 bg-white border border-slate-200 rounded-2xl shadow-2xl p-4 z-50 space-y-3 text-slate-800">
               <div class="flex items-center justify-between">
                 <div><div class="font-bold text-sm">Adults</div><div class="text-xs text-slate-400">12+ years</div></div>
                 <div class="flex items-center gap-2.5">
@@ -145,43 +214,48 @@
               </div>
               <div class="pt-2 border-t border-slate-100">
                 <label class="block text-xs font-bold text-slate-500 mb-1">Cabin Class</label>
-                <select id="cabinClass" onchange="syncPaxDisplay()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-semibold">
+                <select id="cabinClass" onchange="syncPaxDisplay()" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm font-semibold">
                   <option value="">Economy</option>
                   <option value="w">Premium Economy</option>
                   <option value="c">Business Class</option>
                   <option value="f">First Class</option>
                 </select>
               </div>
-              <button type="button" onclick="togglePaxPopover()" class="w-full bg-[#0a3673] text-white py-2 rounded-lg text-sm font-bold">Done</button>
+              <button type="button" onclick="togglePaxPopover()" class="w-full bg-[#1557c0] text-white py-2 rounded-xl text-sm font-bold">Done</button>
             </div>
           </div>
 
-          <button type="submit" class="bg-[#FFD200] hover:bg-[#f2c600] text-slate-900 font-extrabold text-base py-4 lg:py-0 px-6 rounded-b-xl lg:rounded-bl-none lg:rounded-r-xl transition cursor-pointer flex items-center justify-center">
-            Search
-          </button>
-        </div>
-
-        <div class="flex flex-wrap items-center justify-between gap-3 pt-3 px-1 text-xs sm:text-sm font-medium text-white/95">
-          <div class="flex flex-wrap items-center gap-5">
-            <label class="inline-flex items-center gap-2 cursor-pointer select-none">
-              <input type="checkbox" id="directOnlyCheck" onchange="onDirectToggle()" class="w-4 h-4 rounded border-white/40 accent-[#FFD200]" />
-              <span>Direct Flights</span>
-            </label>
-            <a href="#calendar" class="inline-flex items-center gap-1.5 text-blue-100 hover:text-[#FFD200] transition">
-              <span>📊</span><span>When-to-Fly Calendar</span>
-            </a>
+          <!-- SEARCH CTA BUTTON -->
+          <div class="lg:pl-3 flex">
+            <button type="submit" class="w-full bg-[#1a9d3f] hover:bg-[#158334] text-white font-extrabold text-sm sm:text-base py-3.5 px-5 rounded-xl transition shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer">
+              <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2.6" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m1.85-5.15a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+              <span>Search Flights</span>
+            </button>
           </div>
-
-          <button type="button" onclick="openAlertModal()" class="inline-flex items-center gap-2.5 cursor-pointer group">
-            <span class="w-9 h-5 bg-white/25 group-hover:bg-[#FFD200]/80 rounded-full p-0.5 flex items-center transition">
-              <span class="w-4 h-4 bg-white rounded-full shadow transition transform"></span>
-            </span>
-            <span class="group-hover:text-[#FFD200] transition">Sign up for best flight deals</span>
-          </button>
         </div>
 
-        <p id="formError" class="hidden bg-red-500/90 text-white text-xs sm:text-sm font-semibold px-3 py-2 rounded-lg mt-3"></p>
+        <p id="formError" class="hidden bg-red-500 text-white text-xs sm:text-sm font-semibold px-3 py-2 rounded-xl mt-2.5"></p>
       </form>
     </div>
+
+    <!-- Subtle Utility Row below Search Box -->
+    <div class="flex flex-wrap items-center justify-between gap-3 pt-3 px-2 text-xs sm:text-sm font-bold text-[#082454]/80">
+      <div class="flex flex-wrap items-center gap-5">
+        <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+          <input type="checkbox" id="directOnlyCheck" onchange="onDirectToggle()" class="w-4 h-4 rounded accent-[#1a9d3f]" />
+          <span>Direct Flights Only</span>
+        </label>
+        <a href="#calendar" class="inline-flex items-center gap-1.5 hover:text-[#1557c0] transition">
+          <span>📊</span><span>Lowest Fare Calendar</span>
+        </a>
+      </div>
+
+      <button type="button" onclick="openAlertModal()" class="inline-flex items-center gap-1.5 text-[#1557c0] hover:text-[#1a9d3f] transition">
+        <span>🔔</span><span>Get Price Drop Alerts</span>
+      </button>
+    </div>
+
   </div>
 </section>
