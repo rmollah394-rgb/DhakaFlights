@@ -4,10 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dhaka Flights Today — Live DAC Airport Departures &amp; Arrivals | DhakaFlights.com</title>
-  <meta name="description" content="Live flight status, departure and arrival timetable for Hazrat Shahjalal International Airport (DAC), Dhaka. Check terminals, delays, airlines, and compare fares." />
+  <meta name="description" content="Live flight status, departure and arrival timetable for Hazrat Shahjalal International Airport (DAC), Dhaka. Check airlines, terminals, delays, and compare airfares." />
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-100 text-slate-800 font-sans antialiased">
+<body class="bg-[#f3f6fa] text-slate-800 font-sans antialiased">
 
   <!-- Top Navbar -->
   <header class="bg-[#003580] text-white border-b border-white/15">
@@ -22,10 +22,10 @@
       </a>
 
       <nav class="hidden md:flex items-center gap-6 text-sm font-semibold">
-        <a href="/" class="text-white/85 hover:text-[#FFD200]">Search Flights</a>
+        <a href="/" class="text-white/85 hover:text-[#FFD200] transition">Search Flights</a>
         <a href="/dhaka-flights-today" class="text-[#FFD200]">Live DAC Board</a>
-        <a href="/#calendar" class="text-white/85 hover:text-[#FFD200]">Fare Calendar</a>
-        <a href="/#deals" class="text-white/85 hover:text-[#FFD200]">Dhaka Deals</a>
+        <a href="/#calendar" class="text-white/85 hover:text-[#FFD200] transition">Fare Calendar</a>
+        <a href="/#deals" class="text-white/85 hover:text-[#FFD200] transition">Dhaka Deals</a>
       </nav>
 
       <a href="/" class="bg-[#FFD200] hover:bg-[#f2c600] text-slate-900 px-4 py-2 rounded-lg text-xs font-extrabold transition">
@@ -34,57 +34,89 @@
     </div>
   </header>
 
-  <!-- Airport Monitor Header -->
-  <section class="bg-gradient-to-r from-[#051d40] via-[#0a3673] to-[#0057b8] text-white py-8 px-4">
+  <!-- Clean Hero Strip -->
+  <section class="bg-gradient-to-r from-[#003580] via-[#0052a8] to-[#1a73c9] text-white py-7 px-4">
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
-        <div class="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/30 text-emerald-200 text-xs font-bold px-3 py-1 rounded-full mb-2">
+        <div class="inline-flex items-center gap-2 bg-white/15 border border-white/20 text-blue-50 text-xs font-bold px-3 py-1 rounded-full mb-2">
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
           Hazrat Shahjalal International Airport (DAC)
         </div>
-        <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight">Dhaka Airport Live Flight Board</h1>
-        <p class="text-blue-200 text-sm mt-1">Real-time departures, arrivals, terminals &amp; flight status in Bangladesh Standard Time (BST).</p>
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Dhaka Airport Live Departures &amp; Arrivals</h1>
+        <p class="text-blue-100 text-xs sm:text-sm mt-1">Real-time flight schedules, airline logos, terminals &amp; live airfare comparison.</p>
       </div>
 
-      <div class="bg-white/10 backdrop-blur-sm border border-white/15 rounded-2xl px-5 py-3.5 text-left md:text-right shrink-0">
-        <div class="text-[11px] uppercase tracking-wider text-blue-200 font-bold">Dhaka Local Time (UTC+6)</div>
+      <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl px-5 py-3 text-left md:text-right shrink-0">
+        <div class="text-[11px] uppercase tracking-wider text-blue-100 font-bold">Dhaka Time (BST • UTC+6)</div>
         <div id="dhakaClock" class="text-2xl font-mono font-extrabold text-[#FFD200] mt-0.5">--:--:--</div>
-        <div id="cacheStatus" class="text-[11px] text-blue-100 mt-1">Loading schedule...</div>
+        <div id="cacheStatus" class="text-[11px] text-blue-100 mt-0.5">Loading schedule...</div>
       </div>
     </div>
   </section>
 
-  <!-- Main Board Controls & Table -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Tabs + Filters -->
-    <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm mb-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-      <div class="flex items-center gap-2">
+  <!-- Main Content -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- Quick Summary Stats Cards (Like Flightradar24) -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
+        <div class="text-xs font-bold text-slate-400 uppercase">Total Flights</div>
+        <div id="statTotal" class="text-2xl font-extrabold text-slate-900 mt-1">--</div>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
+        <div class="text-xs font-bold text-emerald-600 uppercase">On Time / Scheduled</div>
+        <div id="statOnTime" class="text-2xl font-extrabold text-emerald-700 mt-1">--</div>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
+        <div class="text-xs font-bold text-sky-600 uppercase">Active In Air</div>
+        <div id="statActive" class="text-2xl font-extrabold text-sky-700 mt-1">--</div>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
+        <div class="text-xs font-bold text-amber-600 uppercase">Delayed</div>
+        <div id="statDelayed" class="text-2xl font-extrabold text-amber-700 mt-1">--</div>
+      </div>
+    </div>
+
+    <!-- Controls & Filters Card -->
+    <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm mb-5 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+      <div class="flex flex-wrap items-center gap-2">
         <button type="button" id="tabDep" onclick="switchBoard('departures')"
-          class="px-5 py-2.5 rounded-xl text-sm font-extrabold bg-[#0a3673] text-white transition">
-          🛫 Departures (DAC Out)
+          class="px-4 py-2.5 rounded-xl text-sm font-extrabold bg-[#003580] text-white transition">
+          🛫 Departures
         </button>
         <button type="button" id="tabArr" onclick="switchBoard('arrivals')"
-          class="px-5 py-2.5 rounded-xl text-sm font-extrabold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
-          🛬 Arrivals (DAC In)
+          class="px-4 py-2.5 rounded-xl text-sm font-extrabold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+          🛬 Arrivals
+        </button>
+
+        <div class="h-6 w-px bg-slate-200 mx-1 hidden sm:block"></div>
+
+        <button type="button" id="btnUpcoming" onclick="setTimeWindow('upcoming')"
+          class="px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200 transition">
+          Upcoming &amp; Live Now
+        </button>
+        <button type="button" id="btnAllTimes" onclick="setTimeWindow('all')"
+          class="px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100 transition">
+          All Flights
         </button>
       </div>
 
       <div class="flex flex-wrap items-center gap-3">
         <input type="text" id="flightFilter" oninput="renderBoard()"
-          placeholder="Search flight (e.g. EK585), city or airline..."
+          placeholder="Search flight (EK585), city or airline..."
           class="border border-slate-300 rounded-xl px-4 py-2 text-sm font-medium w-full sm:w-64 focus:ring-2 focus:ring-blue-600 focus:outline-none" />
 
-        <select id="statusFilter" onchange="renderBoard()" class="border border-slate-300 rounded-xl px-3 py-2 text-sm font-bold bg-slate-50">
+        <select id="statusFilter" onchange="renderBoard()" class="border border-slate-300 rounded-xl px-3 py-2 text-sm font-bold bg-slate-50 text-slate-700">
           <option value="all">All Status</option>
           <option value="scheduled">Scheduled</option>
-          <option value="active">Active / In Air</option>
+          <option value="active">In Air / Active</option>
           <option value="landed">Landed</option>
           <option value="delayed">Delayed</option>
           <option value="cancelled">Cancelled</option>
         </select>
 
         <label class="inline-flex items-center gap-2 text-xs font-bold text-slate-600 cursor-pointer select-none">
-          <input type="checkbox" id="hideCodeshares" checked onchange="renderBoard()" class="w-4 h-4 accent-[#0a3673]" />
+          <input type="checkbox" id="hideCodeshares" checked onchange="renderBoard()" class="w-4 h-4 accent-[#003580]" />
           <span>Hide Codeshares</span>
         </label>
       </div>
@@ -94,23 +126,23 @@
       Preview Mode: Add your <b>AIRLABS_API_KEY</b> in Cloudflare Worker Secrets to activate live Dhaka Airport timetable feeds.
     </div>
 
-    <!-- Airport LED Board Table -->
-    <div class="bg-[#071a36] text-white rounded-3xl shadow-xl overflow-hidden border border-slate-800">
+    <!-- Clean White Flight Table (Comfortable to Read) -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
       <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
           <thead>
-            <tr class="bg-[#0c2752] text-[11px] uppercase tracking-wider text-blue-200 border-b border-white/10">
-              <th class="py-3.5 px-5">Time (BST)</th>
-              <th class="py-3.5 px-4">Flight &amp; Airline</th>
+            <tr class="bg-slate-50 text-[11px] uppercase tracking-wider text-slate-500 font-bold border-b border-slate-200">
+              <th class="py-3.5 px-5">Time</th>
+              <th class="py-3.5 px-4">Airline &amp; Flight</th>
               <th class="py-3.5 px-4" id="colAirport">Destination</th>
               <th class="py-3.5 px-4" id="colGate">Terminal / Gate</th>
               <th class="py-3.5 px-4">Status</th>
               <th class="py-3.5 px-5 text-right">Airfare</th>
             </tr>
           </thead>
-          <tbody id="boardBody" class="divide-y divide-white/10 text-sm">
+          <tbody id="boardBody" class="divide-y divide-slate-100 text-sm">
             <tr>
-              <td colspan="6" class="py-12 text-center text-blue-200">Loading Dhaka (DAC) live flights...</td>
+              <td colspan="6" class="py-12 text-center text-slate-400 font-medium">Loading Dhaka (DAC) live flights...</td>
             </tr>
           </tbody>
         </table>
@@ -118,7 +150,7 @@
     </div>
   </main>
 
-  <footer class="max-w-7xl mx-auto px-4 pb-10 text-center text-xs text-slate-500">
+  <footer class="max-w-7xl mx-auto px-4 py-8 text-center text-xs text-slate-500">
     &copy; <span id="year"></span> DhakaFlights.com — Independent Flight Schedule &amp; Airfare Comparison.
   </footer>
 
