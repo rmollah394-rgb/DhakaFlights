@@ -1,0 +1,47 @@
+@import "tailwindcss";
+@source "../../src";
+@source "../../public/js";
+
+/* Tailwind v4-এ বাটনে ডিফল্ট cursor: default থাকে, তাই পুরোনো আচরণ ধরে রাখতে */
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+}
+
+/* Hero Gradient Background */
+.sky-hero {
+  background:
+    radial-gradient(ellipse 80% 55% at 85% 25%, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0) 65%),
+    radial-gradient(ellipse 70% 50% at 15% 85%, rgba(190, 230, 255, 0.32) 0%, rgba(255, 255, 255, 0) 65%),
+    radial-gradient(ellipse 55% 45% at 65% 75%, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 60%),
+    linear-gradient(125deg, #003580 0%, #0057b8 42%, #2986cc 78%, #6cb8eb 100%);
+}
+
+.autocomplete-list {
+  max-height: 270px;
+  overflow-y: auto;
+}
+
+/* Airlines Marquee */
+@keyframes dfMarquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.df-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: dfMarquee 34s linear infinite;
+}
+
+.df-marquee-wrap:hover .df-marquee-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .df-marquee-track {
+    animation: none;
+  }
+}
