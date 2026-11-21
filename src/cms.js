@@ -1,3 +1,8 @@
+import baseHtml from "./layout/base.html";
+import navbarHtml from "./layout/navbar.html";
+import footerHtml from "./layout/footer.html";
+import alertModalHtml from "./sections/alert-modal.html";
+
 export const DEFAULT_CMS = {
   settings: {
     siteName: "DhakaFlights.com",
@@ -204,6 +209,65 @@ export function esc(str) {
     .replace(/'/g, "&#39;");
 }
 
+function renderTemplate(tpl, vars) {
+  return tpl.replace(/\{\{([A-Z0-9_]+)\}\}/g, (_, key) => vars[key] ?? "");
+}
+
+function buildSeoHead(cms, canonical, extraSchemas = []) {
+  const s = cms.settings;
+  const gscTag = s.gscMeta ? `<meta name="google-site-verification" content="${esc(s.gscMeta)}" />` : "";
+  const gaValid = /^G-[A-Z0-9]+$/i.test((s.gaId || "").trim()) ? s.gaId.trim() : "";
+  const gaTag = gaValid
+    ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${gaValid}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${gaValid}');</script>`
+    : "";
+  const schemaTags = extraSchemas.map(obj => `<script type="application/ld+json">${JSON.stringify(obj)}</script>`);
+
+  return [
+    `<link rel="canonical" href="${esc(canonical)}" />`,
+    gscTag,
+    gaTag,
+    ...schemaTags
+  ].filter(Boolean).join("\n  ");
+}
+
+function renderBaseLayout({
+  title,
+  desc,
+  canonical,
+  bodyClass = "bg-[#f3f6fa] text-slate-800 font-sans antialiased overflow-x-hidden",
+  useTopNavbar = true,
+  contentHtml,
+  scripts = [],
+  schemas = [],
+  cms
+}) {
+  const s = cms.settings;
+  const topNavbar = useTopNavbar
+    ? `<div class="bg-[#003580] text-white border-b border-white/15">${navbarHtml}</div>`
+    : "";
+
+  const footer = renderTemplate(footerHtml, {
+    FOOTER_TEXT: esc(s.footerText),
+    CURRENT_YEAR: String(new Date().getFullYear())
+  });
+
+  const pageScripts = scripts
+    .map(src => `<script defer src="${esc(src)}"></script>`)
+    .join("\n  ");
+
+  return renderTemplate(baseHtml, {
+    PAGE_TITLE: esc(title),
+    PAGE_DESC: esc(desc),
+    SEO_HEAD_EXTRA: buildSeoHead(cms, canonical, schemas),
+    BODY_CLASS: bodyClass,
+    TOP_NAVBAR: topNavbar,
+    PAGE_CONTENT: contentHtml,
+    ALERT_MODAL: alertModalHtml,
+    FOOTER: footer,
+    PAGE_SCRIPTS: pageScripts
+  });
+}
+
 export async function getCmsData(env) {
   let stored = null;
   if (env.CMS_KV) {
@@ -345,17 +409,11 @@ function jsonRes(obj, status = 200) {
   });
 }
 
-// --- Homepage Injection Helpers ---
-export function renderHomepageHtml(parts, cms) {
+// --- Homepage Renderer ---
+export function renderHomepageHtml(sections, cms) {
   const s = cms.settings;
   const publishedRoutes = cms.routes.filter(r => r.published !== false);
   const publishedGuides = cms.guides.filter(g => g.published !== false);
-
-  const gscTag = s.gscMeta ? `<meta name="google-site-verification" content="${esc(s.gscMeta)}" />` : "";
-  const gaValid = /^G-[A-Z0-9]+$/i.test((s.gaId || "").trim()) ? s.gaId.trim() : "";
-  const gaTag = gaValid
-    ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${gaValid}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${gaValid}');</script>`
-    : "";
 
   const faqSchema = {
     "@context": "https://schema.org",
@@ -379,17 +437,14 @@ export function renderHomepageHtml(parts, cms) {
     }
   };
 
-  const seoHeadExtra = [
-    `<link rel="canonical" href="https://dhakaflights.com/" />`,
-    gscTag,
-    gaTag,
-    `<script type="application/ld+json">${JSON.stringify(websiteSchema)}</script>`,
-    `<script type="application/ld+json">${JSON.stringify(faqSchema)}</script>`
-  ].filter(Boolean).join("\n  ");
+  const rawBannerLink = String(s.bannerLink || "/dhaka-flights-today").trim();
+  const safeBannerLink = rawBannerLink.startsWith("/") || rawBannerLink.startsWith("https://")
+    ? rawBannerLink
+    : "/dhaka-flights-today";
 
   const bannerHtml = s.bannerEnabled && s.bannerText
     ? `<div class="bg-[#FFD200] text-slate-900 text-xs sm:text-sm font-extrabold text-center py-2 px-4">
-         <a href="${esc(s.bannerLink || "/dhaka-flights-today")}" class="hover:underline">${esc(s.bannerText)}</a>
+         <a href="${esc(safeBannerLink)}" class="hover:underline">${esc(s.bannerText)}</a>
        </div>`
     : "";
 
@@ -415,83 +470,68 @@ export function renderHomepageHtml(parts, cms) {
 
   const heroTitleHtml = esc(s.heroTitle).replace(/\n/g, "<br />");
 
-  return parts.join("\n")
-    .replace("{{SEO_HEAD_EXTRA}}", seoHeadExtra)
-    .replace("{{ANNOUNCEMENT_BAR}}", bannerHtml)
-    .replace("{{HERO_TITLE}}", heroTitleHtml)
-    .replace("{{HERO_SUBTITLE}}", esc(s.heroSubtitle))
-    .replace("{{POPULAR_ROUTES_LINKS}}", `<div class="flex flex-wrap gap-2 mt-4">${routesPills}</div><div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6">${guideLinks}</div>`)
-    .replace("{{DYNAMIC_FAQS}}", faqsHtml)
-    .replace("{{FOOTER_TEXT}}", esc(s.footerText));
+  const blocks = [];
+  if (sections.heroSearchHtml) {
+    blocks.push(renderTemplate(sections.heroSearchHtml, {
+      ANNOUNCEMENT_BAR: bannerHtml,
+      NAVBAR: navbarHtml,
+      HERO_TITLE: heroTitleHtml,
+      HERO_SUBTITLE: esc(s.heroSubtitle)
+    }));
+  }
+  if (sections.airlinesBarHtml) blocks.push(sections.airlinesBarHtml);
+  if (sections.fareCalendarHtml) blocks.push(sections.fareCalendarHtml);
+  if (sections.dealsGridHtml) blocks.push(sections.dealsGridHtml);
+  if (sections.travelGuidesHtml) {
+    blocks.push(renderTemplate(sections.travelGuidesHtml, {
+      POPULAR_ROUTES_LINKS: `<div class="flex flex-wrap gap-2 mt-4">${routesPills}</div><div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6">${guideLinks}</div>`,
+      DYNAMIC_FAQS: faqsHtml
+    }));
+  }
+
+  return renderBaseLayout({
+    title: "DhakaFlights.com — Explore Unbeatable Flight Prices from Dhaka & Worldwide",
+    desc: "Compare cheap flights from Dhaka (DAC) and worldwide across 200+ airlines & travel sites. Interactive low-fare calendar, direct flight filters, and fare drop alerts.",
+    canonical: "https://dhakaflights.com/",
+    bodyClass: "bg-slate-50 text-slate-800 font-sans antialiased overflow-x-hidden",
+    useTopNavbar: !sections.heroSearchHtml,
+    contentHtml: blocks.join("\n"),
+    scripts: [
+      "/js/sections/hero-search.js",
+      "/js/sections/airlines-bar.js",
+      "/js/sections/fare-calendar.js",
+      "/js/sections/deals-grid.js"
+    ],
+    schemas: [websiteSchema, faqSchema],
+    cms
+  });
 }
 
-// --- Shared Header/Footer for SEO Subpages ---
-function subpageShell(title, desc, canonical, bodyHtml, cms, schemaObj = null) {
-  const s = cms.settings;
-  const gscTag = s.gscMeta ? `<meta name="google-site-verification" content="${esc(s.gscMeta)}" />` : "";
-  const schemaTag = schemaObj ? `<script type="application/ld+json">${JSON.stringify(schemaObj)}</script>` : "";
-
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${esc(title)}</title>
-  <meta name="description" content="${esc(desc)}" />
-  <link rel="canonical" href="${esc(canonical)}" />
-  ${gscTag}
-  ${schemaTag}
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-[#f3f6fa] text-slate-800 font-sans antialiased">
-  <header class="bg-[#003580] text-white border-b border-white/15">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      <a href="/" class="flex items-center gap-2.5">
-        <svg class="w-8 h-8 shrink-0" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M6 19.5L19.5 6H32C33.1 6 34 6.9 34 8V20.5L20.5 34C19.7 34.8 18.4 34.8 17.6 34L6 22.4C5.2 21.6 5.2 20.3 6 19.5Z" stroke="#FFD200" stroke-width="2.6" stroke-linejoin="round"/>
-          <circle cx="28" cy="12" r="2.2" fill="#FFD200"/>
-          <path d="M13 22L24 16L19 25L17 22L13 22Z" fill="#FFD200"/>
-        </svg>
-        <span class="text-lg font-extrabold tracking-tight">DhakaFlights<span class="text-[#FFD200]">.com</span></span>
-      </a>
-      <nav class="hidden md:flex items-center gap-6 text-sm font-semibold">
-        <a href="/" class="text-white/85 hover:text-[#FFD200]">Search Flights</a>
-        <a href="/dhaka-flights-today" class="text-white/85 hover:text-[#FFD200]">Live DAC Board</a>
-        <a href="/guides" class="text-white/85 hover:text-[#FFD200]">Travel Guides</a>
-      </nav>
-      <a href="/" class="bg-[#FFD200] hover:bg-[#f2c600] text-slate-900 px-4 py-2 rounded-lg text-xs font-extrabold">Compare Flights →</a>
-    </div>
-  </header>
-  ${bodyHtml}
-  <footer class="bg-[#051d40] text-slate-300 py-10 px-4 mt-12">
-    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm">
-      <div><span class="text-white font-extrabold">DhakaFlights<span class="text-[#FFD200]">.com</span></span> — ${esc(s.footerText)}</div>
-      <div class="flex flex-wrap gap-4 text-blue-200">
-        <a href="/dhaka-flights-today" class="hover:text-[#FFD200]">Live DAC Board</a>
-        <a href="/guides" class="hover:text-[#FFD200]">Guides</a>
-        <a href="/about" class="hover:text-[#FFD200]">About</a>
-        <a href="/contact" class="hover:text-[#FFD200]">Contact</a>
-        <a href="/privacy-policy" class="hover:text-[#FFD200]">Privacy</a>
-        <a href="/terms" class="hover:text-[#FFD200]">Terms</a>
-      </div>
-    </div>
-  </footer>
-</body>
-</html>`;
+// --- Live DAC Schedule Page Renderer ---
+export function renderSchedulePage(scheduleBoardHtml, cms) {
+  return renderBaseLayout({
+    title: "Dhaka Flights Today — Live DAC Airport Departures & Arrivals | DhakaFlights.com",
+    desc: "Live flight status, departure and arrival timetable for Hazrat Shahjalal International Airport (DAC), Dhaka. Check airlines, terminals, delays, and compare airfares.",
+    canonical: "https://dhakaflights.com/dhaka-flights-today",
+    contentHtml: scheduleBoardHtml,
+    scripts: ["/js/schedule.js"],
+    cms
+  });
 }
 
+// --- SEO Route & Guide Pages ---
 export async function renderRoutePage(slug, cms, env) {
   const route = cms.routes.find(r => r.slug === slug && r.published !== false);
   if (!route) return null;
 
   const depDefault = new Date(Date.now() + 14 * 86400000);
   const ddmm = `${String(depDefault.getDate()).padStart(2, "0")}${String(depDefault.getMonth() + 1).padStart(2, "0")}`;
-  const searchUrl = `https://search.dhakaflights.com/?flightSearch=${route.origin}${ddmm}${route.destination}1`;
+  const searchUrl = `https://search.dhakaflights.com/?flightSearch=${encodeURIComponent(route.origin + ddmm + route.destination + "1")}`;
 
   let livePrice = null;
   if (env.TRAVELPAYOUTS_TOKEN) {
     try {
-      const apiUrl = `https://api.travelpayouts.com/aviasales/v3/prices_for_dates?origin=${route.origin}&destination=${route.destination}&currency=bdt&market=us&sorting=price&limit=1`;
+      const apiUrl = `https://api.travelpayouts.com/aviasales/v3/prices_for_dates?origin=${encodeURIComponent(route.origin)}&destination=${encodeURIComponent(route.destination)}&currency=bdt&market=us&sorting=price&limit=1`;
       const res = await fetch(apiUrl, { headers: { "X-Access-Token": env.TRAVELPAYOUTS_TOKEN } });
       if (res.ok) {
         const json = await res.json();
@@ -514,14 +554,14 @@ export async function renderRoutePage(slug, cms, env) {
   };
 
   const body = `
-    <section class="bg-gradient-to-r from-[#003580] to-[#1a73c9] text-white py-12 px-4">
+    <section class="bg-linear-to-r from-[#003580] to-[#1a73c9] text-white py-12 px-4">
       <div class="max-w-5xl mx-auto">
         <div class="text-xs font-bold text-blue-200 mb-2"><a href="/" class="hover:underline">Dhaka Flights</a> / Dhaka to ${esc(route.city)}</div>
         <h1 class="text-3xl sm:text-4xl font-extrabold">Cheap Flights from Dhaka (${esc(route.origin)}) to ${esc(route.city)} (${esc(route.destination)})</h1>
         <p class="text-blue-100 mt-2 max-w-2xl">${esc(route.summary)}</p>
         <div class="mt-6 flex flex-wrap items-center gap-4">
-          <a href="${searchUrl}" class="bg-[#FFD200] hover:bg-[#f2c600] text-slate-900 font-extrabold px-6 py-3.5 rounded-xl shadow-lg transition">
-            ${livePrice ? `Compare Fares from ৳ ${Number(livePrice).toLocaleString()} →` : `Search Live ${route.origin} → ${route.destination} Fares →`}
+          <a href="${esc(searchUrl)}" class="bg-[#FFD200] hover:bg-[#f2c600] text-slate-900 font-extrabold px-6 py-3.5 rounded-xl shadow-lg transition">
+            ${livePrice ? `Compare Fares from ৳ ${Number(livePrice).toLocaleString()} →` : `Search Live ${esc(route.origin)} → ${esc(route.destination)} Fares →`}
           </a>
           <a href="/dhaka-flights-today" class="bg-white/15 hover:bg-white/25 border border-white/25 text-white font-bold px-5 py-3.5 rounded-xl text-sm">
             Check Today's DAC Schedule
@@ -564,13 +604,20 @@ export async function renderRoutePage(slug, cms, env) {
       </div>
     </main>`;
 
-  return subpageShell(title, desc, `https://dhakaflights.com/flights/${route.slug}`, body, cms, schema);
+  return renderBaseLayout({
+    title,
+    desc,
+    canonical: `https://dhakaflights.com/flights/${route.slug}`,
+    contentHtml: body,
+    schemas: [schema],
+    cms
+  });
 }
 
 export function renderGuidesIndex(cms) {
   const published = cms.guides.filter(g => g.published !== false);
   const cards = published.map(g => `
-    <a href="/guides/${esc(g.slug)}" class="bg-white p-6 rounded-2xl border border-slate-200 hover:border-blue-500 shadow-sm hover:shadow-md transition block">
+    <a href="/guides/${esc(g.slug)}" class="bg-white p-6 rounded-2xl border border-slate-200 hover:border-blue-500 shadow-xs hover:shadow-md transition block">
       <span class="text-[11px] font-extrabold uppercase text-blue-700 bg-blue-50 px-2.5 py-1 rounded-full">${esc(g.category || "Guide")}</span>
       <h2 class="text-lg font-extrabold text-slate-900 mt-3">${esc(g.title)}</h2>
       <p class="text-sm text-slate-600 mt-2">${esc(g.summary)}</p>
@@ -586,7 +633,13 @@ export function renderGuidesIndex(cms) {
     </section>
     <main class="max-w-5xl mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-2 gap-5">${cards}</main>`;
 
-  return subpageShell("Dhaka Flights Travel Guides | DhakaFlights.com", "Airport terminal guides, airline baggage limits, and cheap flight booking tips from Dhaka.", "https://dhakaflights.com/guides", body, cms);
+  return renderBaseLayout({
+    title: "Dhaka Flights Travel Guides | DhakaFlights.com",
+    desc: "Airport terminal guides, airline baggage limits, and cheap flight booking tips from Dhaka.",
+    canonical: "https://dhakaflights.com/guides",
+    contentHtml: body,
+    cms
+  });
 }
 
 export function renderGuidePage(slug, cms) {
@@ -597,7 +650,7 @@ export function renderGuidePage(slug, cms) {
   const body = `
     <main class="max-w-3xl mx-auto px-4 py-10">
       <div class="text-xs font-bold text-blue-700 mb-3"><a href="/" class="hover:underline">Home</a> / <a href="/guides" class="hover:underline">Guides</a></div>
-      <article class="bg-white p-6 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-5">
+      <article class="bg-white p-6 sm:p-10 rounded-3xl border border-slate-200 shadow-xs space-y-5">
         <span class="text-xs font-extrabold uppercase text-blue-700 bg-blue-50 px-3 py-1 rounded-full">${esc(guide.category || "Guide")}</span>
         <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900">${esc(guide.title)}</h1>
         <p class="text-slate-500 text-sm font-medium border-b border-slate-100 pb-4">${esc(guide.summary)}</p>
@@ -609,7 +662,13 @@ export function renderGuidePage(slug, cms) {
       </article>
     </main>`;
 
-  return subpageShell(`${guide.title} | DhakaFlights.com`, guide.summary, `https://dhakaflights.com/guides/${guide.slug}`, body, cms);
+  return renderBaseLayout({
+    title: `${guide.title} | DhakaFlights.com`,
+    desc: guide.summary,
+    canonical: `https://dhakaflights.com/guides/${guide.slug}`,
+    contentHtml: body,
+    cms
+  });
 }
 
 export function renderTrustPage(type, cms) {
@@ -637,12 +696,19 @@ export function renderTrustPage(type, cms) {
 
   const body = `
     <main class="max-w-3xl mx-auto px-4 py-12">
-      <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-4">
-        <h1 class="text-3xl font-extrabold text-slate-900">${p.title}</h1>
+      <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-xs space-y-4">
+        <h1 class="text-3xl font-extrabold text-slate-900">${esc(p.title)}</h1>
         <div class="space-y-4 text-sm text-slate-700 leading-relaxed">${p.html}</div>
       </div>
     </main>`;
-  return subpageShell(`${p.title} | DhakaFlights.com`, p.title, `https://dhakaflights.com/${type}`, body, cms);
+
+  return renderBaseLayout({
+    title: `${p.title} | DhakaFlights.com`,
+    desc: p.title,
+    canonical: `https://dhakaflights.com/${type}`,
+    contentHtml: body,
+    cms
+  });
 }
 
 export function renderSitemap(cms) {
@@ -660,6 +726,6 @@ export function renderSitemap(cms) {
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls.map(u => `  <url><loc>${u.loc}</loc><priority>${u.priority}</priority></url>`).join("\n")}
+${urls.map(u => `  <url><loc>${esc(u.loc)}</loc><priority>${u.priority}</priority></url>`).join("\n")}
 </urlset>`;
 }
