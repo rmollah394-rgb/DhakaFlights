@@ -2,7 +2,6 @@
 @source "../../src";
 @source "../../public/js";
 
-/* Tailwind v4-এ বাটনে ডিফল্ট cursor: default থাকে, তাই পুরোনো আচরণ ধরে রাখতে */
 @layer base {
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]) {
@@ -10,7 +9,6 @@
   }
 }
 
-/* Hero Gradient Background */
 .sky-hero {
   background:
     radial-gradient(ellipse 80% 55% at 85% 25%, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0) 65%),
@@ -24,7 +22,6 @@
   overflow-y: auto;
 }
 
-/* Airlines Marquee */
 @keyframes dfMarquee {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
