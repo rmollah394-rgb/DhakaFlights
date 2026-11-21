@@ -2,20 +2,18 @@ import {
   getCmsData,
   handleAdminApi,
   renderHomepageHtml,
+  renderSchedulePage,
   renderRoutePage,
   renderGuidesIndex,
   renderGuidePage,
   renderTrustPage,
   renderSitemap
 } from "./cms.js";
-import headHtml from "./sections/head.html";
 import heroSearchHtml from "./sections/hero-search.html";
 import airlinesBarHtml from "./sections/airlines-bar.html";
 import fareCalendarHtml from "./sections/fare-calendar.html";
 import dealsGridHtml from "./sections/deals-grid.html";
 import travelGuidesHtml from "./sections/travel-guides.html";
-import alertModalHtml from "./sections/alert-modal.html";
-import footerHtml from "./sections/footer.html";
 import scheduleBoardHtml from "./sections/schedule-board.html";
 import adminPanelHtml from "./sections/admin-panel.html";
 
@@ -65,57 +63,79 @@ export default {
     if (path === "/api/alert" && request.method === "POST") return handleAlert(request, env);
     if (path === "/api/schedule") return handleSchedule(request, env, url);
 
-    // 3. Live Dhaka Airport Board
-    if (path === "/dhaka-flights-today" || path === "/schedule") {
-      return new Response(scheduleBoardHtml, {
-        headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=300" }
-      });
+    // 3. Fast Static Assets (Before any CMS KV reads)
+    if (
+      path.startsWith("/css/") ||
+      path.startsWith("/js/") ||
+      /\.(?:png|jpe?g|webp|svg|ico|woff2?|css|js)$/i.test(path)
+    ) {
+      return env.ASSETS.fetch(request);
     }
 
-    // 4. Static Assets (/js/app.js, /js/schedule.js, /js/admin.js)
-    if (path.startsWith("/js/") || path === "/favicon.ico") {
-      return env.ASSETS.fetch(request);
+    // 4. Robots.txt
+    if (path === "/robots.txt") {
+      const robots = "User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /api/\n\nSitemap: https://dhakaflights.com/sitemap.xml\n";
+      return new Response(robots, { headers: { "Content-Type": "text/plain; charset=utf-8" } });
     }
 
     // 5. Dynamic CMS & SEO Pages
     const cms = await getCmsData(env);
 
+    if (path === "/sitemap.xml") {
+      return new Response(renderSitemap(cms), {
+        headers: { "Content-Type": "application/xml; charset=utf-8", "Cache-Control": "public, max-age=300" }
+      });
+    }
+
+    if (path === "/dhaka-flights-today" || path === "/schedule") {
+      return new Response(renderSchedulePage(scheduleBoardHtml, cms), {
+        headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=300" }
+      });
+    }
+
     if (path === "/" || path === "/index.html") {
       const html = renderHomepageHtml(
-        [headHtml, heroSearchHtml, airlinesBarHtml, fareCalendarHtml, dealsGridHtml, travelGuidesHtml, alertModalHtml, footerHtml],
+        { heroSearchHtml, airlinesBarHtml, fareCalendarHtml, dealsGridHtml, travelGuidesHtml },
         cms
       );
-      return new Response(html, { headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=60" } });
+      return new Response(html, {
+        headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=60" }
+      });
     }
 
     if (path.startsWith("/flights/")) {
       const slug = path.replace("/flights/", "").replace(/\/$/, "");
       const pageHtml = await renderRoutePage(slug, cms, env);
-      if (pageHtml) return new Response(pageHtml, { headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=60" } });
+      if (pageHtml) {
+        return new Response(pageHtml, {
+          headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=60" }
+        });
+      }
     }
 
     if (path === "/guides" || path === "/guides/") {
-      return new Response(renderGuidesIndex(cms), { headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=60" } });
+      return new Response(renderGuidesIndex(cms), {
+        headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=60" }
+      });
     }
 
     if (path.startsWith("/guides/")) {
       const slug = path.replace("/guides/", "").replace(/\/$/, "");
       const pageHtml = renderGuidePage(slug, cms);
-      if (pageHtml) return new Response(pageHtml, { headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=60" } });
+      if (pageHtml) {
+        return new Response(pageHtml, {
+          headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=60" }
+        });
+      }
     }
 
     if (["/about", "/contact", "/privacy-policy", "/terms"].includes(path)) {
       const pageHtml = renderTrustPage(path.slice(1), cms);
-      if (pageHtml) return new Response(pageHtml, { headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=300" } });
-    }
-
-    if (path === "/sitemap.xml") {
-      return new Response(renderSitemap(cms), { headers: { "Content-Type": "application/xml; charset=utf-8", "Cache-Control": "public, max-age=300" } });
-    }
-
-    if (path === "/robots.txt") {
-      const robots = `User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /api/\n\nSitemap: https://dhakaflights.com/sitemap.xml\n`;
-      return new Response(robots, { headers: { "Content-Type": "text/plain; charset=utf-8" } });
+      if (pageHtml) {
+        return new Response(pageHtml, {
+          headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=300" }
+        });
+      }
     }
 
     return env.ASSETS.fetch(request);
